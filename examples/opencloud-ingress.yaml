@@ -12,9 +12,9 @@ spec:
   tls:
     - secretName: opencloud-ssl
       hosts:
-      - opencloud.k8s.cluster-4.de          
+      - opencloud.example.com          
   rules:
-  - host: "opencloud.k8s.cluster-4.de"
+  - host: "opencloud.example.com"
     http:
       paths:
         - pathType: Prefix
