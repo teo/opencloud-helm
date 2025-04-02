@@ -9,7 +9,7 @@ description: Plain deployment of the OpenCloud dockerfile.
 home: https://github.com/opencloud-eu/helm
 image: https://raw.githubusercontent.com/opencloud-eu/opencloud/refs/heads/main/opencloud_logo.png
 sources:
-- https://github.com/kubernetes/ingress-nginx
+- https://github.com/opencloud-eu/helm
 appVersion: 2.0.0
 
 
