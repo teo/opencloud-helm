@@ -1,4 +1,4 @@
-{{- if and .Values.keycloak.enabled (not .Values.keycloak.external.enabled) }}
+{{- if and .Values.keycloak.enabled .Values.keycloak.internal.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

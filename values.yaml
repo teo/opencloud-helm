@@ -135,6 +135,10 @@ opencloud:
 keycloak:
   # Enable Keycloak
   enabled: true
+  # Internal test Keycloak instance
+  internal:
+    # Enable internal test Keycloak (default: true)
+    enabled: true
   # Use external Keycloak
   external:
     # Enable external Keycloak
