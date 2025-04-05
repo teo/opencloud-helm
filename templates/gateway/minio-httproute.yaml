@@ -13,7 +13,7 @@ spec:
       namespace: {{ .Values.cilium.httproute.gateway.namespace | default .Values.namespace }}
       sectionName: opencloud-minio-https
   hostnames:
-    - {{ include "opencloud.minio.domain" . | quote }}
+    - {{ include "opencloud.keycloak.domain" . | quote }}
   rules:
     - matches:
         - path:
