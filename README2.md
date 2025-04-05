@@ -1,12 +1,6 @@
-<img src="https://helm.sh/img/helm.svg" width="100px" heigth="100px">
+# OpenCloud Helm Chart
 
-# OpenCloud Helm Charts
-
-Welcome to the **OpenCloud Helm Charts** repository! This repository is intended as a community-driven space for developing and maintaining Helm charts for deploying OpenCloud on Kubernetes.
-
-## 🚀 About
-
-This repository is created to **welcome contributions from the community**. It does not contain official charts from OpenCloud GmbH and is **not officially supported by OpenCloud GmbH**. Instead, these charts are maintained by the open-source community.
+This Helm chart deploys OpenCloud on Kubernetes.
 
 ## Introduction
 
@@ -19,11 +13,7 @@ OpenCloud is a cloud collaboration platform that provides file sync and share, d
 - PV provisioner support in the underlying infrastructure (if persistence is enabled)
 - External ingress controller (e.g., Cilium Gateway API) for routing traffic to the services
 
-
-## TODO
-Currently keycloak, minio and opencloud are working without problems. But collabora and collaboration have yet a websocket error when one opens a docx document (potentiall the wopi secrets have to be different added)
-
-## 📦 Installing the Helm Charts
+## Installing the Chart
 
 To install the chart with the release name `my-opencloud`:
 
@@ -232,6 +222,7 @@ The following table lists the configurable parameters of the OpenCloud chart and
 | `collaboration.wopiDomain` | WOPI server domain | `collaboration.opencloud.test` |
 | `collaboration.resources` | CPU/Memory resource requests/limits | `{}` |
 
+
 ## Cilium Gateway API Configuration
 
 This chart includes Cilium HTTPRoute resources that can be used to expose the OpenCloud, Keycloak, and MinIO services externally. The HTTPRoutes are configured to route traffic to the respective services.
@@ -282,7 +273,7 @@ This section provides a practical guide to setting up the Gateway API with Talos
 
 ### Prerequisites
 
-- Talos Kubernetes cluster up and running
+- Talos Linux cluster up and running
 - kubectl configured to access your cluster
 - Helm 3 installed
 
@@ -496,20 +487,3 @@ And check the logs of the Collabora pod:
 ```bash
 kubectl logs -n opencloud -l app.kubernetes.io/component=collabora
 ```
-
-## 💡 Contributing
-
-We encourage contributions from the community! If you'd like to contribute:
-- Fork this repository
-- Submit a Pull Request
-- Discuss and collaborate on issues
-
-Please ensure that your PR follows best practices and includes necessary documentation.
-
-## 📜 License
-
-This project is licensed under the **AGPLv3** licence. See the [LICENSE](LICENSE) file for more details.
-
-## Community Maintained
-
-This repository is **community-maintained** and **not officially supported by OpenCloud GmbH**. Use at your own risk, and feel free to contribute to improve the project!
