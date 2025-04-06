@@ -12,7 +12,7 @@ spec:
     - {{ .Values.opencloud.persistence.accessMode | quote }}
   resources:
     requests:
-      storage: {{ .Values.opencloud.persistence.size | quote }}
+      storage: {{ .Values.opencloud.persistence.configSize | quote }}
   {{- if .Values.opencloud.persistence.storageClass }}
   {{- if (eq "-" .Values.opencloud.persistence.storageClass) }}
   storageClassName: ""

@@ -88,8 +88,10 @@ opencloud:
   persistence:
     # Enable persistence
     enabled: true
-    # Size of the persistent volume
-    size: 10Gi
+    # Size of the persistent volume for data
+    size: 30Gi
+    # Size of the persistent volume for config
+    configSize: 5Gi
     # Storage class
     storageClass: ""
     # Access mode (ReadWriteOnce or ReadWriteMany for multiple replicas)
