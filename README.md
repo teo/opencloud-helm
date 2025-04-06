@@ -16,6 +16,9 @@ This repository is created to **welcome contributions from the community**. It d
 
 Spin up a temporary local instance of OpenCloud using a single Docker image.
 
+**Note:** This chart is primarily intended for Kubernetes deployment development and testing environments, 
+not for production use. It provides a simplified setup with minimal configuration.
+
 This version deploys opencloud as a single Docker image as described here:
 https://docs.opencloud.eu/docs/admin/getting-started/docker/docker
 
