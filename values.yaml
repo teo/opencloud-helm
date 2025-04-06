@@ -86,9 +86,8 @@ opencloud:
       memory: 2Gi
   # Persistence
   persistence:
-    # Enable persistence (Note: When using multiple replicas, this should be disabled
-    # or use a storage class that supports ReadWriteMany access mode)
-    enabled: false
+    # Enable persistence
+    enabled: true
     # Size of the persistent volume
     size: 10Gi
     # Storage class

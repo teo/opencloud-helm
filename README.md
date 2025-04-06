@@ -19,10 +19,6 @@ OpenCloud is a cloud collaboration platform that provides file sync and share, d
 - PV provisioner support in the underlying infrastructure (if persistence is enabled)
 - External ingress controller (e.g., Cilium Gateway API) for routing traffic to the services
 
-
-## TODO
-Currently keycloak, minio and opencloud are working without problems. But collabora and collaboration have yet a websocket error when one opens a docx document (potentiall the wopi secrets have to be different added)
-
 ## 📦 Installing the Helm Charts
 
 To install the chart with the release name `my-opencloud`:

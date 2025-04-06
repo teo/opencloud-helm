@@ -20,6 +20,22 @@ spec:
         app.kubernetes.io/component: collaboration
     spec:
       initContainers:
+        # Wait for OpenCloud to be ready
+        - name: wait-for-opencloud
+          image: busybox
+          command: ['sh', '-c', 'until wget -q -O- http://{{ include "opencloud.opencloud.fullname" . }}:9200/health; do echo waiting for opencloud; sleep 5; done;']
+        
+        {{- if not .Values.opencloud.persistence.enabled }}
+        # Copy config from OpenCloud API if persistence is disabled
+        - name: copy-config
+          image: busybox
+          command: ['sh', '-c', 'mkdir -p /etc/opencloud && wget -q -O /etc/opencloud/config.json http://{{ include "opencloud.opencloud.fullname" . }}:9200/api/v1/config/secrets || echo "Failed to get config from OpenCloud"']
+          volumeMounts:
+            - name: etc-opencloud
+              mountPath: /etc/opencloud
+        {{- end }}
+        
+        # Wait for Collabora to be ready
         - name: wait-for-collabora
           image: busybox
           command: ['sh', '-c', 'until wget -q -O- http://{{ include "opencloud.fullname" . }}-collabora:9980/hosting/discovery; do echo waiting for collabora; sleep 2; done;']
@@ -30,10 +46,6 @@ spec:
           command: ["/bin/sh"]
           args: ["-c", "opencloud collaboration server"]
           env:
-            - name: COLLABORATION_JWT_SECRET
-              value: "opencloud-collaboration-jwt-secret-fixed"
-            - name: COLLABORATION_WOPI_SECRET
-              value: "opencloud-collaboration-wopi-secret-fixed"
             - name: COLLABORATION_GRPC_ADDR
               value: "0.0.0.0:9301"
             - name: COLLABORATION_HTTP_ADDR
@@ -67,18 +79,35 @@ spec:
             - name: grpc
               containerPort: 9301
               protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9300
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9300
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
           volumeMounts:
             - name: etc-opencloud
               mountPath: /etc/opencloud
-            - name: collaboration-config
-              mountPath: /etc/opencloud/config.json
-              subPath: config.json
           resources:
             {{- toYaml .Values.collaboration.resources | nindent 12 }}
       volumes:
         - name: etc-opencloud
+          {{- if .Values.opencloud.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "opencloud.opencloud.fullname" . }}-config
+            readOnly: true
+          {{- else }}
+          # If persistence is disabled, use an init container to copy the config
           emptyDir: {}
-        - name: collaboration-config
-          configMap:
-            name: {{ include "opencloud.fullname" . }}-collaboration-config
+          {{- end }}
 {{- end }}

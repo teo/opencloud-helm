@@ -19,6 +19,16 @@ spec:
         {{- include "opencloud.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: collabora
     spec:
+      initContainers:
+        # Initialize PVC directories with correct permissions
+        - name: init-directories
+          image: busybox
+          command: ['sh', '-c', 'mkdir -p /opt/cool/systemplate/etc && touch /opt/cool/systemplate/etc/passwd && mkdir -p /opt/cool/child-roots/tmp/sharedpresets/template && for i in $(seq 1 5); do id=$(head /dev/urandom | tr -dc a-f0-9 | head -c 8); mkdir -p /opt/cool/child-roots/1-$id/tmp/sharedpresets/template /opt/cool/child-roots/1-$id/lo; done && chmod -R 777 /opt/cool/systemplate /opt/cool/child-roots']
+          volumeMounts:
+            - name: systemplate
+              mountPath: /opt/cool/systemplate
+            - name: child-roots
+              mountPath: /opt/cool/child-roots
       containers:
         - name: collabora
           image: {{ .Values.collabora.repository }}:{{ .Values.collabora.tag }}
@@ -50,18 +60,39 @@ spec:
             capabilities:
               add:
                 - MKNOD
+                - DAC_OVERRIDE
           livenessProbe:
             httpGet:
               path: /hosting/discovery
               port: 9980
-            initialDelaySeconds: 60
-            periodSeconds: 20
+            initialDelaySeconds: 120
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 6
           readinessProbe:
             httpGet:
               path: /hosting/discovery
               port: 9980
-            initialDelaySeconds: 30
-            periodSeconds: 10
+            initialDelaySeconds: 120
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 6
+          {{- if .Values.collabora.persistence.enabled }}
+          volumeMounts:
+            - name: systemplate
+              mountPath: /opt/cool/systemplate
+            - name: child-roots
+              mountPath: /opt/cool/child-roots
+          {{- end }}
           resources:
             {{- toYaml .Values.collabora.resources | nindent 12 }}
+      {{- if .Values.collabora.persistence.enabled }}
+      volumes:
+        - name: systemplate
+          persistentVolumeClaim:
+            claimName: {{ include "opencloud.fullname" . }}-collabora-systemplate
+        - name: child-roots
+          persistentVolumeClaim:
+            claimName: {{ include "opencloud.fullname" . }}-collabora-child-roots
+      {{- end }}
 {{- end }}
