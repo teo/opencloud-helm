@@ -61,22 +61,27 @@ spec:
               add:
                 - MKNOD
                 - DAC_OVERRIDE
+          startupProbe:
+            httpGet:
+              path: /hosting/discovery
+              port: 9980
+            periodSeconds: 2
+            timeoutSeconds: 5
+            failureThreshold: 60
           livenessProbe:
             httpGet:
               path: /hosting/discovery
               port: 9980
-            initialDelaySeconds: 120
-            periodSeconds: 30
+            periodSeconds: 10
             timeoutSeconds: 5
-            failureThreshold: 6
+            failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /hosting/discovery
               port: 9980
-            initialDelaySeconds: 120
-            periodSeconds: 30
+            periodSeconds: 5
             timeoutSeconds: 5
-            failureThreshold: 6
+            failureThreshold: 3
           {{- if .Values.collabora.persistence.enabled }}
           volumeMounts:
             - name: systemplate

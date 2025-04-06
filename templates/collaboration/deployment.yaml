@@ -79,22 +79,6 @@ spec:
             - name: grpc
               containerPort: 9301
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 9300
-            initialDelaySeconds: 60
-            periodSeconds: 20
-            timeoutSeconds: 5
-            failureThreshold: 6
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 9300
-            initialDelaySeconds: 60
-            periodSeconds: 20
-            timeoutSeconds: 5
-            failureThreshold: 6
           volumeMounts:
             - name: etc-opencloud
               mountPath: /etc/opencloud
