@@ -10,22 +10,28 @@ This repository is created to **welcome contributions from the community**. It d
 
 ## 📦 Installing the Helm Charts
 
-Currently only deployment from the file system is supported:
+(please add)
+
+## 📦 Installing the DEV Helm Charts
+
+Spin up a temporary local instance of OpenCloud using a single Docker image.
+
+This version deploys opencloud as a single Docker image as described here:
+https://docs.opencloud.eu/docs/admin/getting-started/docker/docker
+
+Deployment from the file system:
 
 ```
-$ helm install opencloud -n opencloud --create-namespace ./charts/opencloud --set=adminPassword="<MY-SECURE-PASSWORD>" --set=url="<PUBLIC-URL>"
+$ helm install opencloud -n opencloud --create-namespace ./charts/opencloud-dev --set=adminPassword="<MY-SECURE-PASSWORD>" --set=url="<PUBLIC-URL>"
 ```
 
-It is important the the public-url is reachable, and forwarded to the backend-service opencloud-service:443,
+It is important that the public-url is reachable, and forwarded to the backend-service opencloud-service:443,
 otherwise login will not be possible or the message "missing or invalid config" is shown.
-
-An example ingress for nginx with cert-manager annotations is in ./inwork/opencloud-ingress.yaml.
-
 
 For testing with the default settings port-forwarding from localhost can be used:
 
 ```
-$ helm install opencloud -n opencloud --create-namespace ./charts/opencloud
+$ helm install opencloud -n opencloud --create-namespace ./charts/opencloud-dev
 
   Release "opencloud" does not exist. Installing it now.
   NAME: opencloud
@@ -58,7 +64,7 @@ Now you can login with the default admin / admin
 If you want to change the public URL you can upgrade the deployment with the following command:
 
 ```
-$ helm upgrade opencloud -n opencloud ./charts/opencloud --set=url="<NEW-PUBLIC-URL>"
+$ helm upgrade opencloud -n opencloud ./charts/opencloud-dev --set=url="<NEW-PUBLIC-URL>"
 
   Release "opencloud" has been upgraded. Happy Helming!
   NAME: opencloud
@@ -73,17 +79,14 @@ The opencloud deployment will be restarted and is availble after a few seconds c
 
 If you want to uninstall opencloud this can be done with 
 
-ATTENTION: all you data will be lost, PVCs are not kept at the moment.
-
 ```
 $ helm uninstall -n opencloud opencloud
 
   release "opencloud" uninstalled
 ```
 
+The data PVC is configured to be kept, so it will survive uninstall and install of opencloud-dev
 
-
-(please add)
 
 ## 💡 Contributing
 
