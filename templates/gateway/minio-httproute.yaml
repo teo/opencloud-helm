@@ -11,9 +11,9 @@ spec:
   parentRefs:
     - name: {{ .Values.cilium.httproute.gateway.name }}
       namespace: {{ .Values.cilium.httproute.gateway.namespace | default .Values.namespace }}
-      sectionName: opencloud-minio-https
+      sectionName: minio-https
   hostnames:
-    - {{ include "opencloud.keycloak.domain" . | quote }}
+    - {{ include "opencloud.minio.domain" . | quote }}
   rules:
     - matches:
         - path:
