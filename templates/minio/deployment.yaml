@@ -1,4 +1,4 @@
-{{- if .Values.minio.enabled }}
+{{- if and .Values.minio.enabled .Values.minio.internal.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,16 +25,12 @@ spec:
         - name: init-minio-bucket
           image: busybox
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
             runAsUser: 1000
             runAsGroup: 1000
             runAsNonRoot: true
             seccompProfile:
               type: RuntimeDefault
-          command: ['sh', '-c', 'mkdir -p /data/{{ .Values.minio.bucketName }}']
+          command: ['sh', '-c', 'mkdir -p /data/{{ .Values.minio.internal.bucketName }}']
           volumeMounts:
             - name: data
               mountPath: /data
@@ -42,10 +38,6 @@ spec:
         - name: minio
           image: minio/minio:latest
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
             runAsUser: 1000
             runAsGroup: 1000
             runAsNonRoot: true
@@ -54,9 +46,9 @@ spec:
           args: ["server", "--console-address", ":9001", "/data"]
           env:
             - name: MINIO_ROOT_USER
-              value: {{ .Values.minio.rootUser | quote }}
+              value: {{ .Values.minio.internal.rootUser | quote }}
             - name: MINIO_ROOT_PASSWORD
-              value: {{ .Values.minio.rootPassword | quote }}
+              value: {{ .Values.minio.internal.rootPassword | quote }}
           ports:
             - name: api
               containerPort: 9000
@@ -65,11 +57,38 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
+          startupProbe:
+            httpGet:
+              path: /minio/health/live
+              port: 9000
+            periodSeconds: 2
+            timeoutSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet:
+              path: /minio/health/live
+              port: 9000
+            # Increased period to check less frequently
+            periodSeconds: 60
+            # Increased timeout to allow more time for response
+            timeoutSeconds: 20
+            # Increased failure threshold to be more tolerant
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /minio/health/ready
+              port: 9000
+            # Increased period to check less frequently
+            periodSeconds: 30
+            # Increased timeout to allow more time for response
+            timeoutSeconds: 10
+            # Increased failure threshold to be more tolerant
+            failureThreshold: 5
           resources:
-            {{- toYaml .Values.minio.resources | nindent 12 }}
+            {{- toYaml .Values.minio.internal.resources | nindent 12 }}
       volumes:
         - name: data
-          {{- if .Values.minio.persistence.enabled }}
+          {{- if .Values.minio.internal.persistence.enabled }}
           persistentVolumeClaim:
             claimName: {{ include "opencloud.minio.fullname" . }}-data
           {{- else }}

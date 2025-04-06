@@ -215,41 +215,25 @@ spec:
             - name: PROXY_CSP_CONFIG_FILE_LOCATION
               value: "/etc/opencloud/csp.yaml"
             # Storage configuration
-            {{- if .Values.minio.enabled }}
-            # When MinIO is enabled, use decomposeds3 for user storage and decomposed for system storage
+            # Always use decomposeds3 for user storage and decomposed for system storage
             - name: STORAGE_USERS_DRIVER
               value: "decomposeds3"
             - name: STORAGE_SYSTEM_DRIVER
               value: "decomposed"
-            {{- else }}
-            # Use the configured storage drivers when MinIO is not enabled
-            - name: STORAGE_USERS_DRIVER
-              value: {{ .Values.opencloud.storage.driver | quote }}
-            - name: STORAGE_SYSTEM_DRIVER
-              value: {{ .Values.opencloud.storage.systemDriver | quote }}
-            {{- end }}
-            # Posix storage configuration
-            {{- if eq .Values.opencloud.storage.systemDriver "posix" }}
-            - name: STORAGE_SYSTEM_POSIX_ROOT
-              value: {{ .Values.opencloud.storage.posix.root | quote }}
-            - name: STORAGE_SYSTEM_POSIX_SHARE_FOLDER
-              value: {{ .Values.opencloud.storage.posix.shareFolder | quote }}
-            - name: STORAGE_SYSTEM_POSIX_USER_LAYOUT
-              value: {{ .Values.opencloud.storage.posix.userLayout | quote }}
-            {{- end }}
+            
             # S3 storage configuration
-            {{- if eq .Values.opencloud.storage.driver "decomposeds3" }}
             - name: STORAGE_USERS_DECOMPOSEDS3_ENDPOINT
-              value: {{ if .Values.opencloud.storage.s3.endpoint }}{{ .Values.opencloud.storage.s3.endpoint | quote }}{{ else }}"http://{{ include "opencloud.minio.fullname" . }}:9000"{{ end }}
+              value: {{ if .Values.opencloud.storage.s3.external.enabled }}{{ .Values.opencloud.storage.s3.external.endpoint | quote }}{{ else }}"http://{{ include "opencloud.minio.fullname" . }}:9000"{{ end }}
             - name: STORAGE_USERS_DECOMPOSEDS3_REGION
-              value: {{ .Values.opencloud.storage.s3.region | quote }}
+              value: {{ if .Values.opencloud.storage.s3.external.enabled }}{{ .Values.opencloud.storage.s3.external.region | quote }}{{ else }}{{ .Values.opencloud.storage.s3.internal.region | default "default" | quote }}{{ end }}
             - name: STORAGE_USERS_DECOMPOSEDS3_ACCESS_KEY
-              value: {{ if .Values.opencloud.storage.s3.accessKey }}{{ .Values.opencloud.storage.s3.accessKey | quote }}{{ else }}{{ .Values.minio.rootUser | quote }}{{ end }}
+              value: {{ if .Values.opencloud.storage.s3.external.enabled }}{{ .Values.opencloud.storage.s3.external.accessKey | quote }}{{ else }}{{ .Values.opencloud.storage.s3.internal.rootUser | quote }}{{ end }}
             - name: STORAGE_USERS_DECOMPOSEDS3_SECRET_KEY
-              value: {{ if .Values.opencloud.storage.s3.secretKey }}{{ .Values.opencloud.storage.s3.secretKey | quote }}{{ else }}{{ .Values.minio.rootPassword | quote }}{{ end }}
+              value: {{ if .Values.opencloud.storage.s3.external.enabled }}{{ .Values.opencloud.storage.s3.external.secretKey | quote }}{{ else }}{{ .Values.opencloud.storage.s3.internal.rootPassword | quote }}{{ end }}
             - name: STORAGE_USERS_DECOMPOSEDS3_BUCKET
-              value: {{ if .Values.opencloud.storage.s3.bucket }}{{ .Values.opencloud.storage.s3.bucket | quote }}{{ else }}{{ .Values.minio.bucketName | quote }}{{ end }}
-            {{- end }}
+              value: {{ if .Values.opencloud.storage.s3.external.enabled }}{{ .Values.opencloud.storage.s3.external.bucket | quote }}{{ else }}{{ .Values.opencloud.storage.s3.internal.bucketName | quote }}{{ end }}
+            - name: STORAGE_USERS_DECOMPOSEDS3_CREATE_BUCKET
+              value: {{ if .Values.opencloud.storage.s3.external.enabled }}{{ .Values.opencloud.storage.s3.external.createBucket | default true | quote }}{{ else }}"true"{{ end }}
           ports:
             - name: http
               containerPort: 9200

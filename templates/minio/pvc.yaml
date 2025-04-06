@@ -1,4 +1,4 @@
-{{- if and .Values.minio.enabled .Values.minio.persistence.enabled }}
+{{- if and .Values.minio.enabled .Values.minio.internal.enabled .Values.minio.internal.persistence.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -9,15 +9,15 @@ metadata:
     app.kubernetes.io/component: minio
 spec:
   accessModes:
-    - {{ .Values.minio.persistence.accessMode | quote }}
+    - {{ .Values.minio.internal.persistence.accessMode | quote }}
   resources:
     requests:
-      storage: {{ .Values.minio.persistence.size | quote }}
-  {{- if .Values.minio.persistence.storageClass }}
-  {{- if (eq "-" .Values.minio.persistence.storageClass) }}
+      storage: {{ .Values.minio.internal.persistence.size | quote }}
+  {{- if .Values.minio.internal.persistence.storageClass }}
+  {{- if (eq "-" .Values.minio.internal.persistence.storageClass) }}
   storageClassName: ""
   {{- else }}
-  storageClassName: {{ .Values.minio.persistence.storageClass | quote }}
+  storageClassName: {{ .Values.minio.internal.persistence.storageClass | quote }}
   {{- end }}
   {{- end }}
 {{- end }}

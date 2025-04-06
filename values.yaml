@@ -112,25 +112,51 @@ opencloud:
   
   # Storage configuration
   storage:
-    # Storage driver (posix, decomposed, decomposeds3)
-    driver: "decomposeds3"
-    # System storage driver (posix, decomposed)
-    systemDriver: "decomposed"
-    
-    # S3 storage configuration (when driver is decomposeds3)
+    # S3 storage configuration
     s3:
-      # S3 endpoint (defaults to MinIO service if empty)
-      endpoint: ""
-      # S3 region
-      region: "default"
-      # S3 access key (defaults to MinIO root user if empty)
-      accessKey: ""
-      # S3 secret key (defaults to MinIO root password if empty)
-      secretKey: ""
-      # S3 bucket (defaults to MinIO bucket name if empty)
-      bucket: ""
-      # Create bucket if it doesn't exist
-      createBucket: true
+      # Internal MinIO instance
+      internal:
+        # Enable internal test MinIO instance (default: true)
+        enabled: true
+        # Root user
+        rootUser: opencloud
+        # Root password
+        rootPassword: opencloud-secret-key
+        # Bucket name
+        bucketName: opencloud-bucket
+        # Resources
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+        # Persistence
+        persistence:
+          enabled: true
+          # Size of the persistent volume
+          size: 30Gi
+          # Storage class
+          storageClass: ""
+          # Access mode
+          accessMode: ReadWriteOnce
+      # External S3 (can be S3, Ceph, or external MinIO)
+      external:
+        # Enable external S3
+        enabled: false
+        # External S3 endpoint URL
+        endpoint: ""
+        # External S3 region
+        region: "default"
+        # External S3 access key
+        accessKey: ""
+        # External S3 secret key
+        secretKey: ""
+        # External S3 bucket
+        bucket: ""
+        # Create bucket if it doesn't exist
+        createBucket: true
 
 # Keycloak settings
 keycloak:
@@ -230,29 +256,47 @@ postgres:
 minio:
   # Enable MinIO
   enabled: true
-  # Root user
-  rootUser: opencloud
-  # Root password
-  rootPassword: opencloud-secret-key
-  # Bucket name
-  bucketName: opencloud-bucket
-  # Resources
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
-  # Persistence
-  persistence:
+  # Internal MinIO instance
+  internal:
+    # Enable internal test MinIO instance (default: true)
     enabled: true
-    # Size of the persistent volume
-    size: 10Gi
-    # Storage class
-    storageClass: ""
-    # Access mode
-    accessMode: ReadWriteOnce
+    # Root user
+    rootUser: opencloud
+    # Root password
+    rootPassword: opencloud-secret-key
+    # Bucket name
+    bucketName: opencloud-bucket
+    # Resources
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+    # Persistence
+    persistence:
+      enabled: true
+      # Size of the persistent volume
+      size: 30Gi
+      # Storage class
+      storageClass: ""
+      # Access mode
+      accessMode: ReadWriteOnce
+  # External MinIO
+  external:
+    # Enable external MinIO
+    enabled: false
+    # External MinIO endpoint URL
+    endpoint: ""
+    # External MinIO region
+    region: "default"
+    # External MinIO access key
+    accessKey: ""
+    # External MinIO secret key
+    secretKey: ""
+    # External MinIO bucket
+    bucket: ""
 
 # Tika settings for full-text search
 tika:
