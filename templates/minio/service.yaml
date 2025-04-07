@@ -1,4 +1,4 @@
-{{- if .Values.minio.enabled }}
+{{- if .Values.opencloud.storage.s3.internal.enabled }}
 apiVersion: v1
 kind: Service
 metadata:

@@ -21,10 +21,14 @@ OpenCloud is a cloud collaboration platform that provides file sync and share, d
 
 ## 📦 Installing the Helm Charts
 
-To install the chart with the release name `my-opencloud`:
+To install the chart with the release name `opencloud`:
 
 ```bash
-helm install opencloud .
+helm install opencloud . \
+  --namespace opencloud \
+  --create-namespace \
+  --set cilium.httproute.gateway.name=cilium-gateway \
+  --set cilium.httproute.gateway.namespace=kube-system
 ```
 
 ## Architecture
@@ -121,7 +125,7 @@ The following table lists the configurable parameters of the OpenCloud chart and
 | `global.domain.collabora` | Domain for Collabora | `collabora.opencloud.test` |
 | `global.domain.onlyoffice` | Domain for OnlyOffice | `onlyoffice.opencloud.test` |
 | `global.domain.companion` | Domain for Companion | `companion.opencloud.test` |
-| `global.tls.enabled` | Enable TLS | `true` |
+| `global.tls.enabled` | Enable TLS (set to false when using gateway TLS termination externally) | `false` |
 | `global.tls.selfSigned` | Use self-signed certificates | `true` |
 | `global.tls.acmeEmail` | ACME email for Let's Encrypt | `example@example.org` |
 | `global.tls.acmeCAServer` | ACME CA server | `https://acme-v02.api.letsencrypt.org/directory` |
@@ -154,14 +158,23 @@ The following table lists the configurable parameters of the OpenCloud chart and
 | `opencloud.persistence.size` | Size of the persistent volume | `10Gi` |
 | `opencloud.persistence.storageClass` | Storage class | `""` |
 | `opencloud.persistence.accessMode` | Access mode | `ReadWriteOnce` |
-| `opencloud.storage.driver` | Storage driver (posix, decomposed, decomposeds3) | `decomposeds3` |
-| `opencloud.storage.systemDriver` | System storage driver (posix, decomposed) | `decomposed` |
-| `opencloud.storage.s3.endpoint` | S3 endpoint (defaults to MinIO service if empty) | `""` |
-| `opencloud.storage.s3.region` | S3 region | `default` |
-| `opencloud.storage.s3.accessKey` | S3 access key (defaults to MinIO root user if empty) | `""` |
-| `opencloud.storage.s3.secretKey` | S3 secret key (defaults to MinIO root password if empty) | `""` |
-| `opencloud.storage.s3.bucket` | S3 bucket (defaults to MinIO bucket name if empty) | `""` |
-| `opencloud.storage.s3.createBucket` | Create bucket if it doesn't exist | `true` |
+| `opencloud.storage.s3.internal.enabled` | Enable internal MinIO instance | `true` |
+| `opencloud.storage.s3.internal.rootUser` | MinIO root user | `opencloud` |
+| `opencloud.storage.s3.internal.rootPassword` | MinIO root password | `opencloud-secret-key` |
+| `opencloud.storage.s3.internal.bucketName` | MinIO bucket name | `opencloud-bucket` |
+| `opencloud.storage.s3.internal.region` | MinIO region | `default` |
+| `opencloud.storage.s3.internal.resources` | CPU/Memory resource requests/limits | See values.yaml |
+| `opencloud.storage.s3.internal.persistence.enabled` | Enable MinIO persistence | `true` |
+| `opencloud.storage.s3.internal.persistence.size` | Size of the MinIO persistent volume | `30Gi` |
+| `opencloud.storage.s3.internal.persistence.storageClass` | MinIO storage class | `""` |
+| `opencloud.storage.s3.internal.persistence.accessMode` | MinIO access mode | `ReadWriteOnce` |
+| `opencloud.storage.s3.external.enabled` | Enable external S3 | `false` |
+| `opencloud.storage.s3.external.endpoint` | External S3 endpoint URL | `""` |
+| `opencloud.storage.s3.external.region` | External S3 region | `default` |
+| `opencloud.storage.s3.external.accessKey` | External S3 access key | `""` |
+| `opencloud.storage.s3.external.secretKey` | External S3 secret key | `""` |
+| `opencloud.storage.s3.external.bucket` | External S3 bucket | `""` |
+| `opencloud.storage.s3.external.createBucket` | Create bucket if it doesn't exist | `true` |
 
 ### Keycloak Settings
 
@@ -192,19 +205,6 @@ The following table lists the configurable parameters of the OpenCloud chart and
 | `postgres.persistence.storageClass` | Storage class | `""` |
 | `postgres.persistence.accessMode` | Access mode | `ReadWriteOnce` |
 
-### MinIO Settings
-
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
-| `minio.enabled` | Enable MinIO | `true` |
-| `minio.rootUser` | Root user | `opencloud` |
-| `minio.rootPassword` | Root password | `opencloud-secret-key` |
-| `minio.bucketName` | Bucket name | `opencloud-bucket` |
-| `minio.resources` | CPU/Memory resource requests/limits | `{}` |
-| `minio.persistence.enabled` | Enable persistence | `true` |
-| `minio.persistence.size` | Size of the persistent volume | `10Gi` |
-| `minio.persistence.storageClass` | Storage class | `""` |
-| `minio.persistence.accessMode` | Access mode | `ReadWriteOnce` |
 
 ### Collabora Settings
 
@@ -252,7 +252,7 @@ The following HTTPRoutes are created when `cilium.httproute.enabled` is set to `
    - Service: `{{ release-name }}-keycloak`
    - Port: 8080
 
-3. **MinIO HTTPRoute** (when `minio.enabled` is `true`):
+3. **MinIO HTTPRoute** (when `opencloud.storage.s3.internal.enabled` is `true`):
    - Hostname: `global.domain.minio`
    - Service: `{{ release-name }}-minio`
    - Port: 9001

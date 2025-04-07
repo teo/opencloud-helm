@@ -19,6 +19,8 @@ spec:
         {{- include "opencloud.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: collaboration
     spec:
+      securityContext:
+        fsGroup: 1000
       initContainers:
         # Wait for OpenCloud to be ready
         - name: wait-for-opencloud

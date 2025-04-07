@@ -19,6 +19,8 @@ spec:
         {{- include "opencloud.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: collabora
     spec:
+      securityContext:
+        fsGroup: 1000  
       initContainers:
         # Initialize PVC directories with correct permissions
         - name: init-directories

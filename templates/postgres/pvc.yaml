@@ -4,6 +4,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "opencloud.postgres.fullname" . }}-data
   namespace: {{ .Values.namespace }}
+  annotations:
+    "helm.sh/resource-policy": "keep"
   labels:
     {{- include "opencloud.labels" . | nindent 4 }}
     app.kubernetes.io/component: postgres

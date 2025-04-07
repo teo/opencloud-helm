@@ -1,4 +1,4 @@
-{{- if and .Values.minio.enabled .Values.minio.internal.enabled }}
+{{- if .Values.opencloud.storage.s3.internal.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,6 +21,8 @@ spec:
         {{- include "opencloud.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: minio
     spec:
+      securityContext:
+        fsGroup: 1000
       initContainers:
         - name: init-minio-bucket
           image: busybox
@@ -30,7 +32,7 @@ spec:
             runAsNonRoot: true
             seccompProfile:
               type: RuntimeDefault
-          command: ['sh', '-c', 'mkdir -p /data/{{ .Values.minio.internal.bucketName }}']
+          command: ['sh', '-c', 'mkdir -p /data/{{ .Values.opencloud.storage.s3.internal.bucketName }}']
           volumeMounts:
             - name: data
               mountPath: /data
@@ -46,9 +48,9 @@ spec:
           args: ["server", "--console-address", ":9001", "/data"]
           env:
             - name: MINIO_ROOT_USER
-              value: {{ .Values.minio.internal.rootUser | quote }}
+              value: {{ .Values.opencloud.storage.s3.internal.rootUser | quote }}
             - name: MINIO_ROOT_PASSWORD
-              value: {{ .Values.minio.internal.rootPassword | quote }}
+              value: {{ .Values.opencloud.storage.s3.internal.rootPassword | quote }}
           ports:
             - name: api
               containerPort: 9000
@@ -85,10 +87,10 @@ spec:
             # Increased failure threshold to be more tolerant
             failureThreshold: 5
           resources:
-            {{- toYaml .Values.minio.internal.resources | nindent 12 }}
+            {{- toYaml .Values.opencloud.storage.s3.internal.resources | nindent 12 }}
       volumes:
         - name: data
-          {{- if .Values.minio.internal.persistence.enabled }}
+          {{- if .Values.opencloud.storage.s3.internal.persistence.enabled }}
           persistentVolumeClaim:
             claimName: {{ include "opencloud.minio.fullname" . }}-data
           {{- else }}

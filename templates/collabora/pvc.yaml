@@ -4,6 +4,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "opencloud.fullname" . }}-collabora-systemplate
   namespace: {{ .Values.namespace }}
+  annotations:
+    "helm.sh/resource-policy": "keep"
   labels:
     {{- include "opencloud.labels" . | nindent 4 }}
     app.kubernetes.io/component: collabora
@@ -22,6 +24,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "opencloud.fullname" . }}-collabora-child-roots
   namespace: {{ .Values.namespace }}
+  annotations:
+    "helm.sh/resource-policy": "keep"
   labels:
     {{- include "opencloud.labels" . | nindent 4 }}
     app.kubernetes.io/component: collabora

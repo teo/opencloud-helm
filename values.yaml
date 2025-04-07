@@ -27,9 +27,9 @@ global:
 
   # TLS settings
   tls:
-    # Enable TLS
-    enabled: true
-    # Use self-signed certificates
+    # Enable TLS (set to false when using gateway TLS termination externally)
+    enabled: false
+    # Use self-signed certificates. Disable if you dont want to use cert-manager to generate for cilium gateway-api self-signed certs
     selfSigned: true
     # ACME email for Let's Encrypt
     acmeEmail: example@example.org
@@ -124,6 +124,8 @@ opencloud:
         rootPassword: opencloud-secret-key
         # Bucket name
         bucketName: opencloud-bucket
+        # Region (optional)
+        region: "default"
         # Resources
         resources:
           requests:
@@ -252,51 +254,6 @@ postgres:
     # Access mode
     accessMode: ReadWriteOnce
 
-# MinIO settings
-minio:
-  # Enable MinIO
-  enabled: true
-  # Internal MinIO instance
-  internal:
-    # Enable internal test MinIO instance (default: true)
-    enabled: true
-    # Root user
-    rootUser: opencloud
-    # Root password
-    rootPassword: opencloud-secret-key
-    # Bucket name
-    bucketName: opencloud-bucket
-    # Resources
-    resources:
-      requests:
-        cpu: 100m
-        memory: 256Mi
-      limits:
-        cpu: 1000m
-        memory: 2Gi
-    # Persistence
-    persistence:
-      enabled: true
-      # Size of the persistent volume
-      size: 30Gi
-      # Storage class
-      storageClass: ""
-      # Access mode
-      accessMode: ReadWriteOnce
-  # External MinIO
-  external:
-    # Enable external MinIO
-    enabled: false
-    # External MinIO endpoint URL
-    endpoint: ""
-    # External MinIO region
-    region: "default"
-    # External MinIO access key
-    accessKey: ""
-    # External MinIO secret key
-    secretKey: ""
-    # External MinIO bucket
-    bucket: ""
 
 # Tika settings for full-text search
 tika:

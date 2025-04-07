@@ -4,6 +4,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "opencloud.opencloud.fullname" . }}-config
   namespace: {{ .Values.namespace }}
+  annotations:
+    "helm.sh/resource-policy": "keep"
   labels:
     {{- include "opencloud.labels" . | nindent 4 }}
     app.kubernetes.io/component: opencloud
@@ -26,6 +28,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "opencloud.opencloud.fullname" . }}-data
   namespace: {{ .Values.namespace }}
+  annotations:
+    "helm.sh/resource-policy": "keep"
   labels:
     {{- include "opencloud.labels" . | nindent 4 }}
     app.kubernetes.io/component: opencloud

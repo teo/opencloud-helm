@@ -12,12 +12,10 @@ The following services have been deployed:
 1. OpenCloud (Main Application):
    - Service: {{ include "opencloud.opencloud.fullname" . }}
    - Port: 9200
-   - Storage Driver: {{ .Values.opencloud.storage.driver }}
-   - System Storage Driver: {{ .Values.opencloud.storage.systemDriver }}
-{{- if eq .Values.opencloud.storage.driver "decomposeds3" }}
-   - S3 Storage: {{ if .Values.opencloud.storage.s3.endpoint }}{{ .Values.opencloud.storage.s3.endpoint }}{{ else if .Values.minio.enabled }}MinIO ({{ include "opencloud.minio.fullname" . }}){{ else }}Not configured{{ end }}
-   - S3 Bucket: {{ if .Values.opencloud.storage.s3.bucket }}{{ .Values.opencloud.storage.s3.bucket }}{{ else if .Values.minio.enabled }}{{ .Values.minio.bucketName }}{{ else }}Not configured{{ end }}
-{{- end }}
+   - Storage Driver: decomposeds3
+   - System Storage Driver: decomposed
+   - S3 Storage: {{ if .Values.opencloud.storage.s3.external.enabled }}{{ .Values.opencloud.storage.s3.external.endpoint }}{{ else if .Values.opencloud.storage.s3.internal.enabled }}MinIO ({{ include "opencloud.minio.fullname" . }}){{ else }}Not configured{{ end }}
+   - S3 Bucket: {{ if .Values.opencloud.storage.s3.external.enabled }}{{ .Values.opencloud.storage.s3.external.bucket }}{{ else if .Values.opencloud.storage.s3.internal.enabled }}{{ .Values.opencloud.storage.s3.internal.bucketName }}{{ else }}Not configured{{ end }}
 
 {{- if .Values.keycloak.enabled }}
 2. Keycloak (Authentication):
@@ -27,13 +25,13 @@ The following services have been deployed:
    - Password: {{ .Values.keycloak.adminPassword }}
 {{- end }}
 
-{{- if .Values.minio.enabled }}
+{{- if .Values.opencloud.storage.s3.internal.enabled }}
 3. MinIO (Object Storage):
    - Service: {{ include "opencloud.minio.fullname" . }}
    - API Port: 9000
    - Console Port: 9001
-   - Username: {{ .Values.minio.rootUser }}
-   - Password: {{ .Values.minio.rootPassword }}
+   - Username: {{ .Values.opencloud.storage.s3.internal.rootUser }}
+   - Password: {{ .Values.opencloud.storage.s3.internal.rootPassword }}
 {{- end }}
 
 {{- if .Values.collabora.enabled }}
@@ -67,7 +65,7 @@ Make sure the Gateway exists and is properly configured to accept traffic for th
 {{- if .Values.keycloak.enabled }}
 - Keycloak: {{ include "opencloud.keycloak.domain" . }} (Service: {{ include "opencloud.keycloak.fullname" . }}, Port: 8080)
 {{- end }}
-{{- if .Values.minio.enabled }}
+{{- if .Values.opencloud.storage.s3.internal.enabled }}
 - MinIO Console: {{ include "opencloud.minio.domain" . }} (Service: {{ include "opencloud.minio.fullname" . }}, Port: 9001)
 {{- end }}
 {{- if .Values.collabora.enabled }}
@@ -86,7 +84,7 @@ Example domains for your ingress configuration:
 {{- if .Values.keycloak.enabled }}
 - Keycloak: {{ include "opencloud.keycloak.domain" . }} (Service: {{ include "opencloud.keycloak.fullname" . }}, Port: 8080)
 {{- end }}
-{{- if .Values.minio.enabled }}
+{{- if .Values.opencloud.storage.s3.internal.enabled }}
 - MinIO Console: {{ include "opencloud.minio.domain" . }} (Service: {{ include "opencloud.minio.fullname" . }}, Port: 9001)
 {{- end }}
 {{- if .Values.collabora.enabled }}

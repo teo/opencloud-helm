@@ -32,6 +32,8 @@ spec:
         {{- include "opencloud.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: opencloud
     spec:
+      securityContext:
+        fsGroup: 1000
       initContainers:
         - name: init-config
           image: busybox
