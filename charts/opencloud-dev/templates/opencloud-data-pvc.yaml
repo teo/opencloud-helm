@@ -3,8 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: opencloud-data-pvc
   annotations:
-	# prevent data pvc from being uninstalled
-	helm.sh/resource-policy: "keep"
+    # prevent data pvc from being uninstalled
+    helm.sh/resource-policy: "keep"
   labels:
     app: opencloud
 spec:
