@@ -1,0 +1,92 @@
+{{- if .Values.onlyoffice.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "opencloud.fullname" . }}-onlyoffice-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "opencloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: onlyoffice
+data:
+  entrypoint-override.sh: |
+    #!/bin/sh
+    set -e
+
+    # Copy the configuration so run-document-server.sh finds it
+    cp /etc/onlyoffice/documentserver/local.dist.json /etc/onlyoffice/documentserver/local.json
+
+    # Execute the document server
+    exec /app/ds/run-document-server.sh
+
+  local.json: |
+    {
+      "services": {
+        "CoAuthoring": {
+          "sql": {
+            "type": "postgres",
+            "dbHost": "localhost",
+            "dbPort": "5432",
+            "dbName": "onlyoffice",
+            "dbUser": "onlyoffice",
+            "dbPass": "onlyoffice"
+          },
+          "token": {
+            "enable": {
+              "request": {
+                "inbox": true,
+                "outbox": true
+              },
+              "browser": true
+            },
+            "inbox": {
+              "header": "Authorization"
+            },
+            "outbox": {
+              "header": "Authorization"
+            }
+          },
+          "secret": {
+            "inbox": {
+              "string": "B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu"
+            },
+            "outbox": {
+              "string": "B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu"
+            },
+            "session": {
+              "string": "B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu"
+            }
+          }
+        }
+      },
+      "rabbitmq": {
+        "url": "amqp://guest:guest@localhost"
+      },
+      "FileConverter": {
+        "converter": {
+          "inputLimits": [
+            {
+              "type": "docx;dotx;docm;dotm",
+              "zip": {
+                "uncompressed": "1GB",
+                "template": "*.xml"
+              }
+            },
+            {
+              "type": "xlsx;xltx;xlsm;xltm",
+              "zip": {
+                "uncompressed": "1GB",
+                "template": "*.xml"
+              }
+            },
+            {
+              "type": "pptx;ppsx;potx;pptm;ppsm;potm",
+              "zip": {
+                "uncompressed": "1GB",
+                "template": "*.xml"
+              }
+            }
+          ]
+        }
+      }
+    }
+{{- end }}

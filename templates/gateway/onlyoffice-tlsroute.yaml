@@ -1,0 +1,21 @@
+{{- if false }}
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TLSRoute
+metadata:
+  name: {{ include "opencloud.fullname" . }}-onlyoffice-tlsroute
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "opencloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: onlyoffice
+spec:
+  parentRefs:
+    - name: {{ .Values.cilium.httproute.gateway.name }}
+      namespace: {{ .Values.cilium.httproute.gateway.namespace | default .Values.namespace }}
+      sectionName: onlyoffice-tls
+  hostnames:
+    - {{ .Values.global.domain.onlyoffice | quote }}
+  rules:
+    - backendRefs:
+        - name: {{ include "opencloud.fullname" . }}-onlyoffice
+          port: 443
+{{- end }}

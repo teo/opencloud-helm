@@ -110,12 +110,6 @@ Return the MinIO domain
 {{- .Values.global.domain.minio }}
 {{- end }}
 
-{{/*
-Return the Collabora domain
-*/}}
-{{- define "opencloud.collabora.domain" -}}
-{{- .Values.global.domain.collabora }}
-{{- end }}
 
 {{/*
 Return the OnlyOffice domain
@@ -129,6 +123,13 @@ Return the Companion domain
 */}}
 {{- define "opencloud.companion.domain" -}}
 {{- .Values.global.domain.companion }}
+{{- end }}
+
+{{/*
+Return the WOPI domain
+*/}}
+{{- define "opencloud.wopi.domain" -}}
+{{- .Values.global.domain.wopi }}
 {{- end }}
 
 {{/*

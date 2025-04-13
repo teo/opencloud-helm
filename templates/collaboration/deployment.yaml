@@ -1,4 +1,4 @@
-{{- if and .Values.collaboration.enabled .Values.collabora.enabled }}
+{{- if and .Values.onlyoffice.collaboration.enabled .Values.onlyoffice.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -37,10 +37,10 @@ spec:
               mountPath: /etc/opencloud
         {{- end }}
         
-        # Wait for Collabora to be ready
-        - name: wait-for-collabora
+        # Wait for OnlyOffice to be ready
+        - name: wait-for-onlyoffice
           image: busybox
-          command: ['sh', '-c', 'until wget -q -O- http://{{ include "opencloud.fullname" . }}-collabora:9980/hosting/discovery; do echo waiting for collabora; sleep 2; done;']
+          command: ['sh', '-c', 'until wget -q -O- http://{{ include "opencloud.fullname" . }}-onlyoffice:80/hosting/discovery; do echo waiting for onlyoffice; sleep 2; done;']
       containers:
         - name: collaboration
           image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
@@ -57,15 +57,17 @@ spec:
             - name: MICRO_REGISTRY_ADDRESS
               value: "{{ include "opencloud.opencloud.fullname" . }}.{{ include "opencloud.namespace" . }}.svc.cluster.local:9233"
             - name: COLLABORATION_WOPI_SRC
-              value: "https://{{ .Values.global.domain.wopi }}"
+              value: "https://{{ include "opencloud.wopi.domain" . }}"
             - name: COLLABORATION_APP_NAME
-              value: "CollaboraOnline"
+              value: "OnlyOffice"
             - name: COLLABORATION_APP_PRODUCT
-              value: "Collabora"
+              value: "OnlyOffice"
             - name: COLLABORATION_APP_ADDR
-              value: "https://{{ .Values.global.domain.collabora }}"
+              value: "https://{{ include "opencloud.onlyoffice.domain" . }}"
             - name: COLLABORATION_APP_ICON
-              value: "https://{{ .Values.global.domain.collabora }}/favicon.ico"
+              value: "https://{{ include "opencloud.onlyoffice.domain" . }}/web-apps/apps/documenteditor/main/resources/img/favicon.ico"
+            - name: COLLABORATION_APP_PROOF_DISABLE
+              value: "true"
             - name: COLLABORATION_APP_INSECURE
               value: "{{ .Values.opencloud.insecure }}"
             - name: COLLABORATION_CS3API_DATAGATEWAY_INSECURE
@@ -84,8 +86,21 @@ spec:
           volumeMounts:
             - name: etc-opencloud
               mountPath: /etc/opencloud
+          livenessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - curl --silent --fail http://opencloud-opencloud:9200/app/list | grep '"name":"OnlyOffice"'
+            timeoutSeconds: 10
+            initialDelaySeconds: 200
+            periodSeconds: 5
+            failureThreshold: 1
+          volumeMounts:
+            - name: etc-opencloud
+              mountPath: /etc/opencloud
           resources:
-            {{- toYaml .Values.collaboration.resources | nindent 12 }}
+            {{- toYaml .Values.onlyoffice.collaboration.resources | nindent 12 }}
       volumes:
         - name: etc-opencloud
           {{- if .Values.opencloud.persistence.enabled }}

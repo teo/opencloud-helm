@@ -10,7 +10,7 @@ This repository is created to **welcome contributions from the community**. It d
 
 ## Introduction
 
-OpenCloud is a cloud collaboration platform that provides file sync and share, document collaboration, and more. This Helm chart deploys OpenCloud with Keycloak for authentication, MinIO for object storage, and Collabora for document editing.
+OpenCloud is a cloud collaboration platform that provides file sync and share, document collaboration, and more. This Helm chart deploys OpenCloud with Keycloak for authentication, MinIO for object storage, and multiple options for document editing including Collabora and OnlyOffice.
 
 ## Prerequisites
 
@@ -37,10 +37,13 @@ This Helm chart deploys the following components:
 
 1. **OpenCloud** - Main application (fork of ownCloud Infinite Scale)
 2. **Keycloak** - Authentication provider with OpenID Connect
-3. **PostgreSQL** - Database for Keycloak
+3. **PostgreSQL** - Database for Keycloak and OnlyOffice
 4. **MinIO** - S3-compatible object storage
 5. **Collabora** - Online document editor (CODE - Collabora Online Development Edition)
-6. **Collaboration Service** - WOPI server that connects OpenCloud with Collabora
+6. **OnlyOffice** - Alternative document editor with real-time collaboration
+7. **Collaboration Service** - WOPI server that connects OpenCloud with document editors
+8. **Redis** - Cache for OnlyOffice
+9. **RabbitMQ** - Message queue for OnlyOffice
 
 All services are deployed with `ClusterIP` type, which means they are only accessible within the Kubernetes cluster. You need to configure your own ingress controller (e.g., Cilium Gateway API) to expose the services externally.
 
@@ -55,6 +58,7 @@ graph TD
     subgraph "OpenCloud System"
         Gateway -->|cloud.opencloud.test| OpenCloud[OpenCloud Pod]
         Gateway -->|collabora.opencloud.test| Collabora[Collabora Pod]
+        Gateway -->|onlyoffice.opencloud.test| OnlyOffice[OnlyOffice Pod]
         Gateway -->|collaboration.opencloud.test| Collaboration[Collaboration Pod]
         Gateway -->|wopiserver.opencloud.test| Collaboration
         Gateway -->|keycloak.opencloud.test| Keycloak[Keycloak Pod]
@@ -64,18 +68,25 @@ graph TD
         OpenCloud -->|File Storage| MinIO
         
         Collabora -->|WOPI Protocol| Collaboration
+        OnlyOffice -->|WOPI Protocol| Collaboration
         Collaboration -->|File Access| MinIO
         
         Collaboration -->|Authentication| Keycloak
         
         OpenCloud -->|Collaboration API| Collaboration
+        
+        OnlyOffice -->|Database| PostgreSQL[PostgreSQL]
+        OnlyOffice -->|Cache| Redis[Redis]
+        OnlyOffice -->|Message Queue| RabbitMQ[RabbitMQ]
     end
     
     classDef pod fill:#f9f,stroke:#333,stroke-width:2px;
     classDef gateway fill:#bbf,stroke:#333,stroke-width:2px;
     classDef user fill:#bfb,stroke:#333,stroke-width:2px;
+    classDef db fill:#dfd,stroke:#333,stroke-width:2px;
     
-    class OpenCloud,Collabora,Collaboration,Keycloak,MinIO pod;
+    class OpenCloud,Collabora,OnlyOffice,Collaboration,Keycloak,MinIO pod;
+    class PostgreSQL,Redis,RabbitMQ db;
     class Gateway gateway;
     class User user;
 ```
@@ -96,17 +107,25 @@ Key interactions:
    - Connects to the Collaboration pod via WOPI protocol
    - Uses token server secret for authentication
 
-4. **Collaboration Pod**:
+4. **OnlyOffice Pod**:
+   - Alternative office document editor
+   - Connects to the Collaboration pod via WOPI protocol
+   - Uses PostgreSQL for database storage
+   - Uses Redis for caching
+   - Uses RabbitMQ for message queuing
+   - Provides real-time collaborative editing
+
+5. **Collaboration Pod**:
    - Implements WOPI server functionality
-   - Acts as intermediary between Collabora and file storage
+   - Acts as intermediary between document editors and file storage
    - Handles collaborative editing sessions
    - Accesses files from MinIO
 
-5. **Keycloak Pod**:
+6. **Keycloak Pod**:
    - Handles authentication for all services
    - Manages user identities and permissions
 
-6. **MinIO Pod**:
+7. **MinIO Pod**:
    - Object storage for all files
    - Accessed by OpenCloud and Collaboration pods
 
@@ -206,6 +225,24 @@ The following table lists the configurable parameters of the OpenCloud chart and
 | `postgres.persistence.accessMode` | Access mode | `ReadWriteOnce` |
 
 
+### OnlyOffice Settings
+
+| Parameter | Description | Default |
+| --------- | ----------- | ------- |
+| `onlyoffice.enabled` | Enable OnlyOffice | `true` |
+| `onlyoffice.repository` | OnlyOffice image repository | `onlyoffice/documentserver` |
+| `onlyoffice.tag` | OnlyOffice image tag | `8.2.2` |
+| `onlyoffice.pullPolicy` | Image pull policy | `IfNotPresent` |
+| `onlyoffice.wopi.enabled` | Enable WOPI integration | `true` |
+| `onlyoffice.useUnauthorizedStorage` | Use unauthorized storage (for self-signed certificates) | `true` |
+| `onlyoffice.persistence.enabled` | Enable persistence | `true` |
+| `onlyoffice.persistence.size` | Size of the persistent volume | `2Gi` |
+| `onlyoffice.resources` | CPU/Memory resource requests/limits | `{}` |
+| `onlyoffice.config.coAuthoring.token.enable.request.inbox` | Enable token for incoming requests | `true` |
+| `onlyoffice.config.coAuthoring.token.enable.request.outbox` | Enable token for outgoing requests | `true` |
+| `onlyoffice.config.coAuthoring.token.enable.browser` | Enable token for browser requests | `true` |
+| `onlyoffice.collaboration.enabled` | Enable collaboration service | `true` |
+
 ### Collabora Settings
 
 | Parameter | Description | Default |
@@ -246,29 +283,48 @@ The following HTTPRoutes are created when `cilium.httproute.enabled` is set to `
    - Hostname: `global.domain.opencloud`
    - Service: `{{ release-name }}-opencloud`
    - Port: 9200
+   - Headers: Removes Permissions-Policy header to prevent browser console errors
 
 2. **Keycloak HTTPRoute** (when `keycloak.enabled` is `true`):
    - Hostname: `global.domain.keycloak`
    - Service: `{{ release-name }}-keycloak`
    - Port: 8080
+   - Headers: Adds Permissions-Policy header to prevent browser features like interest-based advertising
 
 3. **MinIO HTTPRoute** (when `opencloud.storage.s3.internal.enabled` is `true`):
    - Hostname: `global.domain.minio`
    - Service: `{{ release-name }}-minio`
    - Port: 9001
+   - Headers: Adds Permissions-Policy header to prevent browser features like interest-based advertising
 
    default user: opencloud
    pass: opencloud-secret-key
 
-4. **Collabora HTTPRoute** (when `collabora.enabled` is `true`):
+4. **OnlyOffice HTTPRoute** (when `onlyoffice.enabled` is `true`):
+   - Hostname: `global.domain.onlyoffice`
+   - Service: `{{ release-name }}-onlyoffice`
+   - Port: 80
+   - Path: "/"
+   - This route is used to access the OnlyOffice Document Server for collaborative editing
+
+5. **WOPI HTTPRoute** (when `onlyoffice.collaboration.enabled` and `onlyoffice.enabled` are `true`):
+   - Hostname: `global.domain.wopi`
+   - Service: `{{ release-name }}-collaboration`
+   - Port: 9300
+   - Path: "/"
+   - This route is used for the WOPI protocol communication between OnlyOffice and the collaboration service
+
+6. **Collabora HTTPRoute** (when `collabora.enabled` is `true`):
    - Hostname: `global.domain.collabora`
    - Service: `{{ release-name }}-collabora`
    - Port: 9980
+   - Headers: Adds Permissions-Policy header to prevent browser features like interest-based advertising
 
-5. **Collaboration (WOPI) HTTPRoute** (when `collaboration.enabled` is `true`):
+7. **Collaboration (WOPI) HTTPRoute** (when `collaboration.enabled` is `true`):
    - Hostname: `collaboration.wopiDomain`
    - Service: `{{ release-name }}-collaboration`
    - Port: 9300
+   - Headers: Adds Permissions-Policy header to prevent browser features like interest-based advertising
 
 All HTTPRoutes are configured to use the same Gateway specified by `cilium.httproute.gateway.name` and `cilium.httproute.gateway.namespace`.
 
@@ -334,6 +390,40 @@ Apply the ClusterIssuer:
 kubectl apply -f cluster-issuer.yaml
 ```
 
+### Step 3: Create a Wildcard Certificate for OpenCloud Domains
+
+Create a wildcard certificate for all OpenCloud subdomains:
+
+```yaml
+# cluster-issuer.yaml
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: opencloud-wildcard-tls
+  namespace: kube-system
+spec:
+  secretName: opencloud-wildcard-tls
+  dnsNames:
+    - "opencloud.test"
+    - "*.opencloud.test"
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+```
+
+Apply the certificate:
+
+```bash
+kubectl apply -f cluster-issuer.yaml
+```
+
 ### Step 4: Create the Gateway
 
 Create a Gateway resource to expose your services:
@@ -353,6 +443,8 @@ spec:
       cilium.io/hubble-visibility: "flow"
       cilium.io/preserve-client-cookies: "true"
       cilium.io/preserve-csrf-token: "true"
+      io.cilium/websocket: "true"
+      io.cilium/websocket-timeout: "3600"
   addresses:
     - type: IPAddress
       value: 192.168.178.77  # Replace with your desired IP
@@ -364,7 +456,7 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-          - name: opencloud-tls
+          - name: opencloud-wildcard-tls
             namespace: kube-system
       allowedRoutes:
         namespaces:
@@ -376,7 +468,7 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-          - name: keycloak-tls
+          - name: opencloud-wildcard-tls
             namespace: kube-system
       allowedRoutes:
         namespaces:
@@ -388,7 +480,19 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-          - name: minio-tls
+          - name: opencloud-wildcard-tls
+            namespace: kube-system
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: onlyoffice-https
+      protocol: HTTPS
+      port: 443
+      hostname: "onlyoffice.opencloud.test"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: opencloud-wildcard-tls
             namespace: kube-system
       allowedRoutes:
         namespaces:
@@ -400,7 +504,7 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-          - name: collabora-tls
+          - name: opencloud-wildcard-tls
             namespace: kube-system
       allowedRoutes:
         namespaces:
@@ -412,7 +516,7 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-          - name: collaboration-tls
+          - name: opencloud-wildcard-tls
             namespace: kube-system
       allowedRoutes:
         namespaces:
@@ -424,7 +528,7 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-          - name: wopi-tls
+          - name: opencloud-wildcard-tls
             namespace: kube-system
       allowedRoutes:
         namespaces:
@@ -451,6 +555,7 @@ Alternatively, for local testing, you can add entries to your `/etc/hosts` file:
 192.168.178.77  cloud.opencloud.test
 192.168.178.77  keycloak.opencloud.test
 192.168.178.77  minio.opencloud.test
+192.168.178.77  onlyoffice.opencloud.test
 192.168.178.77  collabora.opencloud.test
 192.168.178.77  collaboration.opencloud.test
 192.168.178.77  wopiserver.opencloud.test
@@ -475,11 +580,12 @@ helm install opencloud . \
 
 ### Troubleshooting
 
-If you encounter issues with the Collabora pod connecting to the WOPI server, ensure that:
+If you encounter issues with the OnlyOffice or Collabora pods connecting to the WOPI server, ensure that:
 
 1. The WOPI server certificate is properly created in the kube-system namespace
-2. The Collabora pod is configured with the correct WOPI token server secret
+2. The OnlyOffice/Collabora pod is configured with the correct token settings in the configmap
 3. The Gateway is properly configured to route traffic to the WOPI server
+4. The ReferenceGrant is properly configured to allow the Gateway to access the TLS certificates
 
 You can check the status of the certificates:
 
@@ -487,10 +593,30 @@ You can check the status of the certificates:
 kubectl get certificates -n kube-system
 ```
 
-And check the logs of the Collabora pod:
+Check the logs of the OnlyOffice pod:
+
+```bash
+kubectl logs -n opencloud -l app.kubernetes.io/component=onlyoffice
+```
+
+Or check the logs of the Collabora pod:
 
 ```bash
 kubectl logs -n opencloud -l app.kubernetes.io/component=collabora
+```
+
+You can also check the status of the HTTPRoutes:
+
+```bash
+kubectl get httproutes -n opencloud
+```
+
+For OnlyOffice-specific issues, check that the PostgreSQL, Redis, and RabbitMQ services are running correctly:
+
+```bash
+kubectl get pods -n opencloud -l app.kubernetes.io/component=onlyoffice-postgresql
+kubectl get pods -n opencloud -l app.kubernetes.io/component=onlyoffice-redis
+kubectl get pods -n opencloud -l app.kubernetes.io/component=onlyoffice-rabbitmq
 ```
 
 ## 💡 Contributing

@@ -25,7 +25,8 @@ spec:
         fsGroup: 999  # Default PostgreSQL group ID
       containers:
         - name: postgres
-          image: postgres:alpine
+          image: {{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}
+          imagePullPolicy: {{ .Values.postgres.image.pullPolicy }}
           env:
             - name: POSTGRES_DB
               value: {{ .Values.postgres.database | quote }}

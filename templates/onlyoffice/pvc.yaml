@@ -1,0 +1,21 @@
+{{- if and .Values.onlyoffice.enabled .Values.onlyoffice.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "opencloud.fullname" . }}-onlyoffice-data
+  namespace: {{ .Values.namespace }}
+  annotations:
+    "helm.sh/resource-policy": "keep"
+  labels:
+    {{- include "opencloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: onlyoffice
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.onlyoffice.persistence.size | default "2Gi" }}
+  {{- if .Values.global.storage.storageClass }}
+  storageClassName: {{ .Values.global.storage.storageClass }}
+  {{- end }}
+{{- end }}

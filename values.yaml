@@ -1,14 +1,19 @@
-# Default values for OpenCloud Helm chart
-# This is a YAML-formatted file.
+# OpenCloud Helm Chart Values
+# This is a YAML-formatted file with configuration values for the OpenCloud Helm chart.
+# The file is organized into logical sections for different components of the system.
+
+# =====================================================================
+# GLOBAL SETTINGS
+# =====================================================================
 
 # Namespace to install the chart into
 namespace: ""
 # Create the namespace if it doesn't exist
 createNamespace: true
 
-# Global settings
+# Global settings that apply across components
 global:
-  # Domain settings
+  # Domain settings for various services
   domain:
     # Main domain for OpenCloud
     opencloud: cloud.opencloud.test
@@ -16,8 +21,6 @@ global:
     keycloak: keycloak.opencloud.test
     # Domain for MinIO
     minio: minio.opencloud.test
-    # Domain for Collabora
-    collabora: collabora.opencloud.test
     # Domain for WOPI server
     wopi: wopiserver.opencloud.test
     # Domain for OnlyOffice
@@ -25,149 +28,45 @@ global:
     # Domain for Companion
     companion: companion.opencloud.test
 
-  # TLS settings
+  # TLS settings for secure connections
   tls:
     # Enable TLS (set to false when using gateway TLS termination externally)
     enabled: false
-    # Use self-signed certificates. Disable if you dont want to use cert-manager to generate for cilium gateway-api self-signed certs
+    # Use self-signed certificates. Disable if you don't want to use cert-manager to generate self-signed certs for cilium gateway-api
     selfSigned: true
     # ACME email for Let's Encrypt
     acmeEmail: example@example.org
     # ACME CA server
     acmeCAServer: https://acme-v02.api.letsencrypt.org/directory
 
-  # Storage settings
+  # Global storage settings
   storage:
     # Storage class for persistent volumes
     storageClass: ""
 
-# Image settings
-image:
-  # OpenCloud image repository
-  repository: docker.io/opencloudeu/opencloud-rolling
-  # OpenCloud image tag
-  tag: "2.0.0"
-  # Image pull policy
-  pullPolicy: IfNotPresent
-  # Image pull secrets
-  pullSecrets: []
+# =====================================================================
+# IDENTITY PROVIDER (KEYCLOAK)
+# =====================================================================
 
-# OpenCloud settings
-opencloud:
-  # Enable OpenCloud
-  enabled: true
-  # Number of replicas (Note: When using multiple replicas, persistence should be disabled
-  # or use a storage class that supports ReadWriteMany access mode)
-  replicas: 1
-  # Log level
-  logLevel: info
-  # Log color
-  logColor: false
-  # Log pretty
-  logPretty: false
-  # Insecure mode (for self-signed certificates)
-  insecure: true
-  # Enable basic auth (set to false to use Keycloak only)
-  enableBasicAuth: false
-  # Admin password
-  adminPassword: admin
-  # Create demo users
-  createDemoUsers: false
-  # Additional services to start (comma-separated list)
-  additionalServices: ""
-  # Services to exclude from starting
-  excludeServices: "idp"
-  # Resources
-  resources:
-    requests:
-      cpu: 128m
-      memory: 128Mi
-    limits:
-      memory: 2Gi
-  # Persistence
-  persistence:
-    # Enable persistence
-    enabled: true
-    # Size of the persistent volume for data
-    size: 30Gi
-    # Size of the persistent volume for config
-    configSize: 5Gi
-    # Storage class
-    storageClass: ""
-    # Access mode (ReadWriteOnce or ReadWriteMany for multiple replicas)
-    accessMode: ReadWriteOnce
-  # Configuration files
-  config:
-    # App registry configuration
-    appRegistry: {}
-    # CSP configuration
-    csp: {}
-    # Banned password list
-    bannedPasswordList: []
-  
-  # SMTP settings
-  smtp:
-    # Enable SMTP
-    enabled: false
-  
-  # Storage configuration
-  storage:
-    # S3 storage configuration
-    s3:
-      # Internal MinIO instance
-      internal:
-        # Enable internal test MinIO instance (default: true)
-        enabled: true
-        # Root user
-        rootUser: opencloud
-        # Root password
-        rootPassword: opencloud-secret-key
-        # Bucket name
-        bucketName: opencloud-bucket
-        # Region (optional)
-        region: "default"
-        # Resources
-        resources:
-          requests:
-            cpu: 100m
-            memory: 256Mi
-          limits:
-            cpu: 1000m
-            memory: 2Gi
-        # Persistence
-        persistence:
-          enabled: true
-          # Size of the persistent volume
-          size: 30Gi
-          # Storage class
-          storageClass: ""
-          # Access mode
-          accessMode: ReadWriteOnce
-      # External S3 (can be S3, Ceph, or external MinIO)
-      external:
-        # Enable external S3
-        enabled: false
-        # External S3 endpoint URL
-        endpoint: ""
-        # External S3 region
-        region: "default"
-        # External S3 access key
-        accessKey: ""
-        # External S3 secret key
-        secretKey: ""
-        # External S3 bucket
-        bucket: ""
-        # Create bucket if it doesn't exist
-        createBucket: true
-
-# Keycloak settings
+# Keycloak settings for identity and access management
 keycloak:
   # Enable Keycloak
   enabled: true
+  
+  # Keycloak image settings
+  image:
+    # Keycloak image repository
+    repository: quay.io/keycloak/keycloak
+    # Keycloak image tag
+    tag: "26.1.4"
+    # Image pull policy
+    pullPolicy: IfNotPresent
+  
   # Internal test Keycloak instance
   internal:
     # Enable internal test Keycloak (default: true)
     enabled: true
+  
   # Use external Keycloak
   external:
     # Enable external Keycloak
@@ -178,13 +77,15 @@ keycloak:
     realm: "openCloud"
     # External Keycloak client ID
     clientId: "web"
-  # Replicas
+  
+  # Number of Keycloak replicas
   replicas: 1
   # Admin user
   adminUser: admin
   # Admin password
   adminPassword: admin
-  # CORS settings
+  
+  # CORS settings for cross-origin requests
   cors:
     # Enable CORS
     enabled: true
@@ -202,11 +103,13 @@ keycloak:
     allowCredentials: true
     # Max age
     maxAge: 3600
+  
   # Token settings
   token:
     # Access token lifespan in seconds
     accessTokenLifespan: 3600
-  # Resources
+  
+  # Resources allocation
   resources:
     requests:
       cpu: 100m
@@ -214,9 +117,11 @@ keycloak:
     limits:
       cpu: 1000m
       memory: 1Gi
+  
   # Realm name
   realm: openCloud
-  # Persistence
+  
+  # Persistence configuration
   persistence:
     enabled: true
     # Size of the persistent volume
@@ -230,13 +135,21 @@ keycloak:
 postgres:
   # Enable PostgreSQL
   enabled: true
+  # PostgreSQL image settings
+  image:
+    # PostgreSQL image repository
+    repository: postgres
+    # PostgreSQL image tag
+    tag: "alpine"
+    # Image pull policy
+    pullPolicy: IfNotPresent
   # Database name
   database: keycloak
   # Database user
   user: keycloak
   # Database password
   password: keycloak
-  # Resources
+  # Resources allocation
   resources:
     requests:
       cpu: 100m
@@ -244,7 +157,7 @@ postgres:
     limits:
       cpu: 500m
       memory: 512Mi
-  # Persistence
+  # Persistence configuration
   persistence:
     enabled: true
     # Size of the persistent volume
@@ -254,6 +167,10 @@ postgres:
     # Access mode
     accessMode: ReadWriteOnce
 
+
+# =====================================================================
+# EXTENSIONS
+# =====================================================================
 
 # Tika settings for full-text search
 tika:
@@ -265,7 +182,7 @@ tika:
   tag: "2.9.2.1-full"
   # Image pull policy
   pullPolicy: IfNotPresent
-  # Resources
+  # Resources allocation
   resources:
     requests:
       cpu: 100m
@@ -273,62 +190,6 @@ tika:
     limits:
       cpu: 1000m
       memory: 3Gi
-
-# Collabora settings
-collabora:
-  # Enable Collabora
-  enabled: true
-  # Collabora image repository
-  repository: collabora/code
-  # Collabora image tag
-  tag: 24.04.13.2.1
-  # Image pull policy
-  pullPolicy: IfNotPresent
-  # Admin user
-  adminUser: admin
-  # Admin password
-  adminPassword: admin
-  # SSL settings
-  ssl:
-    # Enable SSL
-    enabled: false
-    # SSL verification
-    verification: false
-    # WOPI SSL settings
-    wopi:
-      # Enable SSL for WOPI
-      enabled: false
-      # CA file path for WOPI SSL
-      caFilePath: ""
-  # Persistence
-  persistence:
-    # Enable persistence
-    enabled: true
-    # Size of the persistent volume
-    size: 2Gi
-  # Resources
-  resources:
-    requests:
-      cpu: 100m
-      memory: 256Mi
-    limits:
-      cpu: 1000m
-      memory: 1Gi
-
-# Collaboration service settings
-collaboration:
-  # Enable collaboration service
-  enabled: true
-  # WOPI domain
-  wopiDomain: wopiserver.opencloud.test
-  # Resources
-  resources:
-    requests:
-      cpu: 100m
-      memory: 256Mi
-    limits:
-      cpu: 1000m
-      memory: 1Gi
 
 # Web Extensions settings
 webExtensions:
@@ -366,6 +227,254 @@ webExtensions:
       enabled: true
       repository: opencloudeu/web-extensions
       tag: unzip-1.0.0
+
+# =====================================================================
+# COLLABORATION (ONLYOFFICE)
+# =====================================================================
+
+# OnlyOffice settings for document collaboration
+onlyoffice:
+  # Enable OnlyOffice
+  enabled: true
+  # OnlyOffice image repository
+  repository: onlyoffice/documentserver
+  # OnlyOffice image tag
+  tag: 8.2.2
+  # Image pull policy
+  pullPolicy: IfNotPresent
+  # WOPI settings
+  wopi:
+    # Enable WOPI
+    enabled: true
+  # Use unauthorized storage (for self-signed certificates)
+  useUnauthorizedStorage: true
+  # Persistence configuration
+  persistence:
+    # Enable persistence
+    enabled: true
+    # Size of the persistent volume
+    size: 2Gi
+  # Resources allocation
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+  # Configuration for local.json
+  config:
+    # CoAuthoring service settings
+    coAuthoring:
+      # SQL database settings
+      sql:
+        type: "postgres"
+        dbHost: "localhost"
+        dbPort: "5432"
+        dbName: "onlyoffice"
+        dbUser: "onlyoffice"
+        dbPass: "onlyoffice"
+      # Token settings
+      token:
+        enable:
+          request:
+            inbox: true
+            outbox: true
+          browser: true
+        inbox:
+          header: "Authorization"
+        outbox:
+          header: "Authorization"
+      # Secret settings
+      secret:
+        inbox:
+          string: "B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu"
+        outbox:
+          string: "B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu"
+        session:
+          string: "B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu"
+    # RabbitMQ settings
+    rabbitmq:
+      url: "amqp://guest:guest@localhost"
+    # File converter settings
+    fileConverter:
+      converter:
+        inputLimits:
+          - type: "docx;dotx;docm;dotm"
+            zip:
+              uncompressed: "1GB"
+              template: "*.xml"
+          - type: "xlsx;xltx;xlsm;xltm"
+            zip:
+              uncompressed: "1GB"
+              template: "*.xml"
+          - type: "pptx;ppsx;potx;pptm;ppsm;potm"
+            zip:
+              uncompressed: "1GB"
+              template: "*.xml"
+  # Collaboration service settings
+  collaboration:
+    # Enable collaboration service
+    enabled: true
+    # Resources allocation
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+
+# =====================================================================
+# OPENCLOUD CORE
+# =====================================================================
+
+# Image settings for OpenCloud
+image:
+  # OpenCloud image repository
+  repository: docker.io/opencloudeu/opencloud-rolling
+  # OpenCloud image tag
+  tag: "2.1.0"
+  # Image pull policy
+  pullPolicy: IfNotPresent
+  # Image pull secrets
+  pullSecrets: []
+
+# OpenCloud core settings
+opencloud:
+  # Enable OpenCloud
+  enabled: true
+  # Number of replicas (Note: When using multiple replicas, persistence should be disabled
+  # or use a storage class that supports ReadWriteMany access mode)
+  replicas: 1
+  # Log level
+  logLevel: info
+  # Log color
+  logColor: false
+  # Log pretty
+  logPretty: false
+  # Insecure mode (for self-signed certificates)
+  insecure: true
+  # Enable basic auth (set to false to use Keycloak only)
+  enableBasicAuth: false
+  # Admin password
+  adminPassword: admin
+  # Create demo users
+  createDemoUsers: false
+  # Additional services to start (comma-separated list)
+  additionalServices: ""
+  # Services to exclude from starting
+  excludeServices: "idp"
+  # Resources allocation
+  resources:
+    requests:
+      cpu: 128m
+      memory: 128Mi
+    limits:
+      memory: 2Gi
+  # Persistence configuration
+  persistence:
+    # Enable persistence
+    enabled: true
+    # Size of the persistent volume for data
+    size: 30Gi
+    # Size of the persistent volume for config
+    configSize: 5Gi
+    # Storage class
+    storageClass: ""
+    # Access mode (ReadWriteOnce or ReadWriteMany for multiple replicas)
+    accessMode: ReadWriteOnce
+  # Configuration files
+  config:
+    # App registry configuration
+    appRegistry: {}
+    # CSP configuration
+    csp: {}
+    # Banned password list
+    bannedPasswordList: []
+  
+  # =====================================================================
+  # EMAIL (SMTP)
+  # =====================================================================
+  
+  # SMTP settings for email notifications
+  smtp:
+    # Enable SMTP
+    enabled: false
+    # SMTP host
+    host: ""
+    # SMTP port
+    port: "587"
+    # SMTP sender
+    sender: ""
+    # SMTP username
+    username: ""
+    # SMTP password
+    password: ""
+    # SMTP insecure (allow self-signed certificates)
+    insecure: "false"
+    # SMTP authentication method
+    authentication: "plain"
+    # SMTP encryption method
+    encryption: "starttls"
+
+  # =====================================================================
+  # STORAGE CONFIGURATION
+  # =====================================================================
+  
+  # Storage configuration
+  storage:
+    # S3 storage configuration
+    s3:
+      # Internal MinIO instance
+      internal:
+        # Enable internal test MinIO instance (default: true)
+        enabled: true
+        # Root user
+        rootUser: opencloud
+        # Root password
+        rootPassword: opencloud-secret-key
+        # Bucket name
+        bucketName: opencloud-bucket
+        # Region (optional)
+        region: "default"
+        # Resources allocation
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+        # Persistence configuration
+        persistence:
+          enabled: true
+          # Size of the persistent volume
+          size: 30Gi
+          # Storage class
+          storageClass: ""
+          # Access mode
+          accessMode: ReadWriteOnce
+      # External S3 (can be S3, Ceph, or external MinIO)
+      external:
+        # Enable external S3
+        enabled: false
+        # External S3 endpoint URL
+        endpoint: ""
+        # External S3 region
+        region: "default"
+        # External S3 access key
+        accessKey: ""
+        # External S3 secret key
+        secretKey: ""
+        # External S3 bucket
+        bucket: ""
+        # Create bucket if it doesn't exist
+        createBucket: true
+
+# =====================================================================
+# GATEWAY (CILIUM, PROXY)
+# =====================================================================
 
 # Cilium Gateway API configuration
 cilium:

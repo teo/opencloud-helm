@@ -1,4 +1,4 @@
-Thank you for installing {{ .Chart.Name }}.
+aThank you for installing {{ .Chart.Name }}.
 
 Your release is named {{ .Release.Name }}.
 
@@ -34,26 +34,13 @@ The following services have been deployed:
    - Password: {{ .Values.opencloud.storage.s3.internal.rootPassword }}
 {{- end }}
 
-{{- if .Values.collabora.enabled }}
-4. Collabora (Document Editor):
-   - Service: {{ include "opencloud.fullname" . }}-collabora
-   - Port: 9980
-   - Username: {{ .Values.collabora.adminUser }}
-   - Password: {{ .Values.collabora.adminPassword }}
-{{- end }}
-
-{{- if and .Values.collaboration.enabled .Values.collabora.enabled }}
-5. Collaboration Service (WOPI Server):
+{{- if and .Values.onlyoffice.collaboration.enabled .Values.onlyoffice.enabled }}
+4. OnlyOffice Collaboration Service:
    - Service: {{ include "opencloud.fullname" . }}-collaboration
    - HTTP Port: 9300
    - gRPC Port: 9301
-   - WOPI Domain: {{ .Values.collaboration.wopiDomain }}
-   - JWT Secret: opencloud-collaboration-jwt-secret-fixed
-   - WOPI Secret: opencloud-collaboration-wopi-secret-fixed
-
-NOTE: The Collaboration Service implements the WOPI server that connects OpenCloud with Collabora.
-      The Collabora pod connects to the WOPI server using the WOPI protocol.
 {{- end }}
+
 
 {{- if .Values.cilium.httproute.enabled }}
 IMPORTANT: This chart includes Cilium HTTPRoute resources that route traffic to the OpenCloud, Keycloak, and MinIO services.
@@ -68,11 +55,8 @@ Make sure the Gateway exists and is properly configured to accept traffic for th
 {{- if .Values.opencloud.storage.s3.internal.enabled }}
 - MinIO Console: {{ include "opencloud.minio.domain" . }} (Service: {{ include "opencloud.minio.fullname" . }}, Port: 9001)
 {{- end }}
-{{- if .Values.collabora.enabled }}
-- Collabora: {{ .Values.global.domain.collabora }} (Service: {{ include "opencloud.fullname" . }}-collabora, Port: 9980)
-{{- end }}
-{{- if and .Values.collaboration.enabled .Values.collabora.enabled }}
-- Collaboration (WOPI): {{ .Values.collaboration.wopiDomain }} (Service: {{ include "opencloud.fullname" . }}-collaboration, Port: 9300)
+{{- if and .Values.onlyoffice.collaboration.enabled .Values.onlyoffice.enabled }}
+- OnlyOffice Collaboration: {{ .Values.global.domain.wopi }} (Service: {{ include "opencloud.fullname" . }}-collaboration, Port: 9300)
 {{- end }}
 
 {{- else }}
@@ -87,34 +71,10 @@ Example domains for your ingress configuration:
 {{- if .Values.opencloud.storage.s3.internal.enabled }}
 - MinIO Console: {{ include "opencloud.minio.domain" . }} (Service: {{ include "opencloud.minio.fullname" . }}, Port: 9001)
 {{- end }}
-{{- if .Values.collabora.enabled }}
-- Collabora: {{ .Values.global.domain.collabora }} (Service: {{ include "opencloud.fullname" . }}-collabora, Port: 9980)
-{{- end }}
-{{- if and .Values.collaboration.enabled .Values.collabora.enabled }}
-- Collaboration (WOPI): {{ .Values.collaboration.wopiDomain }} (Service: {{ include "opencloud.fullname" . }}-collaboration, Port: 9300)
+{{- if and .Values.onlyoffice.collaboration.enabled .Values.onlyoffice.enabled }}
+- OnlyOffice Collaboration: {{ .Values.global.domain.wopi }} (Service: {{ include "opencloud.fullname" . }}-collaboration, Port: 9300)
 {{- end }}
 {{- end }}
 
 For more information, please refer to the OpenCloud documentation:
   https://docs.opencloud.eu/
-
-{{- if and .Values.collaboration.enabled .Values.collabora.enabled }}
-TROUBLESHOOTING COLLABORA AND WOPI SERVER CONNECTION:
-
-If you encounter issues with the Collabora pod connecting to the WOPI server (401 Unauthorized errors), ensure that:
-
-1. The WOPI server certificate is properly created in the kube-system namespace:
-   $ kubectl get certificate -n kube-system wopi-tls
-
-2. The Collabora pod is configured with the correct WOPI token server secret:
-   $ kubectl get deployment -n {{ .Values.namespace }} {{ include "opencloud.fullname" . }}-collabora -o yaml | grep token_server.secret
-
-3. The Gateway is properly configured to route traffic to the WOPI server:
-   $ kubectl get gateway -n kube-system -o yaml | grep wopi
-
-4. Check the logs of the Collabora pod for connection errors:
-   $ kubectl logs -n {{ .Values.namespace }} -l app.kubernetes.io/component=collabora
-
-5. Check the logs of the Collaboration pod for authentication errors:
-   $ kubectl logs -n {{ .Values.namespace }} -l app.kubernetes.io/component=collaboration
-{{- end }}

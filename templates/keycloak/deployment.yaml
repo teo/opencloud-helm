@@ -25,7 +25,8 @@ spec:
         fsGroup: 1000
       containers:
         - name: keycloak
-          image: quay.io/keycloak/keycloak:25.0.0
+          image: {{ .Values.keycloak.image.repository }}:{{ .Values.keycloak.image.tag }}
+          imagePullPolicy: {{ .Values.keycloak.image.pullPolicy }}
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -35,12 +36,18 @@ spec:
             seccompProfile:
               type: RuntimeDefault
           command: ["/bin/sh", "/opt/keycloak/bin/docker-entrypoint-override.sh"]
-          args: ["start", "--proxy=edge", "--spi-connections-http-client-default-disable-trust-manager={{ .Values.opencloud.insecure }}", "--import-realm"]
+          args:
+            - "start"
+            - "--http-enabled=true"
+            - "--proxy-headers=xforwarded"
+            - "--hostname=https://{{ include "opencloud.keycloak.domain" . }}"  # Explicitly set the external hostname
+            - "--spi-connections-http-client-default-disable-trust-manager={{ .Values.opencloud.insecure }}"
+            - "--import-realm"
           env:
             - name: OC_DOMAIN
               value: {{ include "opencloud.domain" . }}
-            - name: KC_HOSTNAME
-              value: {{ include "opencloud.keycloak.domain" . }}
+            - name: KC_HOSTNAME_URL
+              value: "https://{{ include "opencloud.keycloak.domain" . }}"  # Ensure the URL includes the https:// scheme
             - name: KC_DB
               value: postgres
             - name: KC_DB_URL
