@@ -1,0 +1,89 @@
+{{- if .Values.onlyoffice.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "opencloud.fullname" . }}-onlyoffice
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "opencloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: onlyoffice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "opencloud.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: onlyoffice
+  template:
+    metadata:
+      labels:
+        {{- include "opencloud.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: onlyoffice
+    spec:
+      containers:
+        - name: onlyoffice
+          image: {{ .Values.onlyoffice.repository }}:{{ .Values.onlyoffice.tag | default "8.2.2" }}
+          imagePullPolicy: {{ .Values.onlyoffice.pullPolicy | default "IfNotPresent" }}
+          command: ["/bin/sh", "/entrypoint-override.sh"]
+          env:
+            - name: WOPI_ENABLED
+              value: "{{ .Values.onlyoffice.wopi.enabled }}"
+            - name: USE_UNAUTHORIZED_STORAGE
+              value: "{{ .Values.onlyoffice.useUnauthorizedStorage }}"
+            - name: DB_TYPE
+              value: "{{ .Values.onlyoffice.config.coAuthoring.sql.type | default "postgres" }}"
+            - name: DB_HOST
+              value: "{{ .Values.onlyoffice.config.coAuthoring.sql.dbHost | default "localhost" }}"
+            - name: DB_PORT
+              value: "{{ .Values.onlyoffice.config.coAuthoring.sql.dbPort | default "5432" }}"
+            - name: DB_NAME
+              value: "{{ .Values.onlyoffice.config.coAuthoring.sql.dbName | default "onlyoffice" }}"
+            - name: DB_USER
+              value: "{{ .Values.onlyoffice.config.coAuthoring.sql.dbUser | default "onlyoffice" }}"
+            - name: JWT_SECRET
+              value: "{{ .Values.onlyoffice.config.coAuthoring.secret.session.string | default "B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu" }}"
+            - name: JWT_HEADER
+              value: "Authorization"
+            - name: AMQP_URI
+              value: "{{ .Values.onlyoffice.config.rabbitmq.url | default "amqp://guest:guest@localhost" }}"
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+            - containerPort: 443
+              name: https
+              protocol: TCP
+          volumeMounts:
+            - name: onlyoffice-config
+              mountPath: /entrypoint-override.sh
+              subPath: entrypoint-override.sh
+            - name: onlyoffice-config
+              mountPath: /etc/onlyoffice/documentserver/local.dist.json
+              subPath: local.json
+            {{- if .Values.onlyoffice.persistence.enabled }}
+            - name: onlyoffice-data
+              mountPath: /var/lib/onlyoffice
+            {{- end }}
+          resources:
+            {{- toYaml .Values.onlyoffice.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /hosting/discovery
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /hosting/discovery
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      volumes:
+        - name: onlyoffice-config
+          configMap:
+            name: {{ include "opencloud.fullname" . }}-onlyoffice-config
+        {{- if .Values.onlyoffice.persistence.enabled }}
+        - name: onlyoffice-data
+          persistentVolumeClaim:
+            claimName: {{ include "opencloud.fullname" . }}-onlyoffice-data
+        {{- end }}
+{{- end }}
