@@ -15,9 +15,7 @@
 # 4. MinIO: rootUser: opencloud, rootPassword: opencloud-secret-key
 # 5. OnlyOffice Secret Keys: secret.inbox/outbox/session.string: B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu
 # 6. RabbitMQ: url: amqp://guest:guest@localhost
-#
-# Note: Some OnlyOffice credentials are hardcoded in templates/onlyoffice/configmap.yaml
-# and cannot be changed through values.yaml. This is a known issue.
+
 
 # =====================================================================
 # GLOBAL SETTINGS
