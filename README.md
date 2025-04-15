@@ -4,13 +4,55 @@
 
 Welcome to the **OpenCloud Helm Charts** repository! This repository is intended as a community-driven space for developing and maintaining Helm charts for deploying OpenCloud on Kubernetes.
 
+## 📑 Table of Contents
+
+- [About](#-about)
+- [Community](#-community)
+- [Contributing](#-contributing)
+- [Prerequisites](#prerequisites)
+- [Installing the Helm Charts](#-installing-the-helm-charts)
+- [Architecture](#architecture)
+  - [Component Interaction Diagram](#component-interaction-diagram)
+- [Configuration](#configuration)
+  - [Global Settings](#global-settings)
+  - [Image Settings](#image-settings)
+  - [OpenCloud Settings](#opencloud-settings)
+  - [Keycloak Settings](#keycloak-settings)
+  - [PostgreSQL Settings](#postgresql-settings)
+  - [OnlyOffice Settings](#onlyoffice-settings)
+  - [Collabora Settings](#collabora-settings)
+  - [Collaboration Service Settings](#collaboration-service-settings)
+- [Cilium Gateway API Configuration](#cilium-gateway-api-configuration)
+  - [Cilium HTTPRoute Settings](#cilium-httproute-settings)
+- [Setting Up Gateway API with Talos, Cilium, and cert-manager](#setting-up-gateway-api-with-talos-cilium-and-cert-manager)
+- [Installing the DEV Helm Charts](#-installing-the-dev-helm-charts)
+- [License](#-license)
+- [Community Maintained](#community-maintained)
+
 ## 🚀 About
 
 This repository is created to **welcome contributions from the community**. It does not contain official charts from OpenCloud GmbH and is **not officially supported by OpenCloud GmbH**. Instead, these charts are maintained by the open-source community.
 
-## Introduction
-
 OpenCloud is a cloud collaboration platform that provides file sync and share, document collaboration, and more. This Helm chart deploys OpenCloud with Keycloak for authentication, MinIO for object storage, and multiple options for document editing including Collabora and OnlyOffice.
+
+## 💬 Community
+
+Join our Matrix chat for discussions about OpenCloud Helm Charts:
+- [OpenCloud Helm on Matrix](https://matrix.to/#/%23opencloud-helm:matrix.org)
+
+For general OpenCloud discussions:
+- [OpenCloud on Matrix](https://matrix.to/#/%23opencloud:matrix.org)
+- [OpenCloud on Mastodon](https://social.opencloud.eu/@OpenCloud)
+- [GitHub Discussions](https://github.com/orgs/opencloud-eu/discussions)
+
+## 💡 Contributing
+
+We encourage contributions from the community! If you'd like to contribute:
+- Fork this repository
+- Submit a Pull Request
+- Discuss and collaborate on issues
+
+Please ensure that your PR follows best practices and includes necessary documentation.
 
 ## Prerequisites
 
@@ -696,16 +738,6 @@ $ helm uninstall -n opencloud opencloud
 ```
 
 The data PVC is configured to be kept, so it will survive uninstall and install of opencloud-dev
-
-
-## 💡 Contributing
-
-We encourage contributions from the community! If you'd like to contribute:
-- Fork this repository
-- Submit a Pull Request
-- Discuss and collaborate on issues
-
-Please ensure that your PR follows best practices and includes necessary documentation.
 
 ## 📜 License
 
