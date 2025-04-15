@@ -1,1 +1,4 @@
 /.project
+
+# macOS
+.DS_Store
