@@ -12,24 +12,16 @@ data:
     #!/bin/sh
     set -e
 
-    # Copy the configuration so run-document-server.sh finds it
-    cp /etc/onlyoffice/documentserver/local.dist.json /etc/onlyoffice/documentserver/local.json
+    # Create a writable directory for the configuration
+    mkdir -p /tmp/onlyoffice/documentserver
 
-    # Execute the document server
+  
     exec /app/ds/run-document-server.sh
 
-  local.json: |
+  local.json: |-
     {
       "services": {
         "CoAuthoring": {
-          "sql": {
-            "type": "postgres",
-            "dbHost": "localhost",
-            "dbPort": "5432",
-            "dbName": "onlyoffice",
-            "dbUser": "onlyoffice",
-            "dbPass": "onlyoffice"
-          },
           "token": {
             "enable": {
               "request": {
@@ -47,19 +39,19 @@ data:
           },
           "secret": {
             "inbox": {
-              "string": "B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu"
+              "string": "{{ .Values.onlyoffice.config.coAuthoring.secret.inbox.string | default "B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu" }}"
             },
             "outbox": {
-              "string": "B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu"
+              "string": "{{ .Values.onlyoffice.config.coAuthoring.secret.outbox.string | default "B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu" }}"
             },
             "session": {
-              "string": "B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu"
+              "string": "{{ .Values.onlyoffice.config.coAuthoring.secret.session.string | default "B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu" }}"
             }
           }
         }
       },
       "rabbitmq": {
-        "url": "amqp://guest:guest@localhost"
+        "url": "{{ .Values.onlyoffice.config.rabbitmq.url | default "amqp://guest:guest@localhost" }}"
       },
       "FileConverter": {
         "converter": {

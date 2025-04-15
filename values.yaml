@@ -3,6 +3,23 @@
 # The file is organized into logical sections for different components of the system.
 
 # =====================================================================
+# SECURITY WARNING
+# =====================================================================
+# IMPORTANT: The following default credentials MUST be changed in production environments.
+# Using these default values in production is a significant security risk.
+#
+# Credentials that need to be changed:
+# 1. Keycloak Admin: adminUser: admin, adminPassword: admin
+# 2. OpenCloud Admin: adminPassword: admin
+# 3. PostgreSQL: user: keycloak, password: keycloak
+# 4. MinIO: rootUser: opencloud, rootPassword: opencloud-secret-key
+# 5. OnlyOffice Secret Keys: secret.inbox/outbox/session.string: B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu
+# 6. RabbitMQ: url: amqp://guest:guest@localhost
+#
+# Note: Some OnlyOffice credentials are hardcoded in templates/onlyoffice/configmap.yaml
+# and cannot be changed through values.yaml. This is a known issue.
+
+# =====================================================================
 # GLOBAL SETTINGS
 # =====================================================================
 
@@ -248,6 +265,12 @@ onlyoffice:
     enabled: true
   # Use unauthorized storage (for self-signed certificates)
   useUnauthorizedStorage: true
+  # Database configuration
+  db:
+    # Use existing secret for database password
+    existingSecret: ""
+    # Key in the existing secret that contains the password
+    secretKeyName: "password"
   # Persistence configuration
   persistence:
     # Enable persistence
@@ -260,8 +283,8 @@ onlyoffice:
       cpu: 100m
       memory: 256Mi
     limits:
-      cpu: 1000m
-      memory: 2Gi
+      cpu: 5000m
+      memory: 10Gi
   # Configuration for local.json
   config:
     # CoAuthoring service settings
@@ -273,7 +296,6 @@ onlyoffice:
         dbPort: "5432"
         dbName: "onlyoffice"
         dbUser: "onlyoffice"
-        dbPass: "onlyoffice"
       # Token settings
       token:
         enable:
@@ -288,14 +310,14 @@ onlyoffice:
       # Secret settings
       secret:
         inbox:
-          string: "B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu"
+          string: "Dd0SXIe1k9oCfdffgrfNmA0TK1bb1B1d38OFSb"
         outbox:
-          string: "B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu"
+          string: "Dd0SXIe1k9oCfdffgrfNmA0TK1bb1B1d38OFSb"
         session:
-          string: "B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu"
+          string: "Dd0SXIe1k9oCfdffgrfNmA0TK1bb1B1d38OFSb"
     # RabbitMQ settings
     rabbitmq:
-      url: "amqp://guest:guest@localhost"
+      url: "amqp://guest:Dd0SXIe1k9osdfjkmA0TK1bb1B1d38OFSb@localhost"
     # File converter settings
     fileConverter:
       converter:
@@ -322,8 +344,8 @@ onlyoffice:
         cpu: 100m
         memory: 256Mi
       limits:
-        cpu: 1000m
-        memory: 1Gi
+        cpu: 5000m
+        memory: 10Gi
 
 # =====================================================================
 # OPENCLOUD CORE
@@ -371,7 +393,7 @@ opencloud:
       cpu: 128m
       memory: 128Mi
     limits:
-      memory: 2Gi
+      memory: 20Gi
   # Persistence configuration
   persistence:
     # Enable persistence
@@ -430,9 +452,9 @@ opencloud:
       internal:
         # Enable internal test MinIO instance (default: true)
         enabled: true
-        # Root user
+        # Minio Root user
         rootUser: opencloud
-        # Root password
+        # Minio Root password
         rootPassword: opencloud-secret-key
         # Bucket name
         bucketName: opencloud-bucket

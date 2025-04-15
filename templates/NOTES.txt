@@ -1,4 +1,4 @@
-aThank you for installing {{ .Chart.Name }}.
+Thank you for installing {{ .Chart.Name }}.
 
 Your release is named {{ .Release.Name }}.
 
@@ -6,6 +6,18 @@ To learn more about the release, try:
 
   $ helm status {{ .Release.Name }}
   $ helm get all {{ .Release.Name }}
+
+IMPORTANT: This is a development deployment. For production use, you MUST change the following default credentials:
+
+1. Keycloak Admin: adminUser: admin, adminPassword: admin
+2. OpenCloud Admin: adminPassword: admin
+3. PostgreSQL: user: keycloak, password: keycloak
+4. MinIO: rootUser: opencloud, rootPassword: opencloud-secret-key
+5. OnlyOffice Database: sql.dbUser: onlyoffice, sql.dbPass: onlyoffice
+6. OnlyOffice Secret Keys: secret.inbox/outbox/session.string: B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu
+7. RabbitMQ: url: amqp://guest:guest@localhost
+
+Using default credentials in production environments poses significant security risks.
 
 The following services have been deployed:
 

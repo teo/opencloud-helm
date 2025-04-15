@@ -29,6 +29,22 @@ spec:
               value: "{{ .Values.onlyoffice.wopi.enabled }}"
             - name: USE_UNAUTHORIZED_STORAGE
               value: "{{ .Values.onlyoffice.useUnauthorizedStorage }}"
+            - name: DB_TYPE
+              value: "{{ .Values.onlyoffice.config.coAuthoring.sql.type | default "postgres" }}"
+            - name: DB_HOST
+              value: "{{ .Values.onlyoffice.config.coAuthoring.sql.dbHost | default "localhost" }}"
+            - name: DB_PORT
+              value: "{{ .Values.onlyoffice.config.coAuthoring.sql.dbPort | default "5432" }}"
+            - name: DB_NAME
+              value: "{{ .Values.onlyoffice.config.coAuthoring.sql.dbName | default "onlyoffice" }}"
+            - name: DB_USER
+              value: "{{ .Values.onlyoffice.config.coAuthoring.sql.dbUser | default "onlyoffice" }}"
+            - name: JWT_SECRET
+              value: "{{ .Values.onlyoffice.config.coAuthoring.secret.session.string | default "B8LjkNqGxn6gf8bkuBUiMwyuCFwFddnu" }}"
+            - name: JWT_HEADER
+              value: "Authorization"
+            - name: AMQP_URI
+              value: "{{ .Values.onlyoffice.config.rabbitmq.url | default "amqp://guest:guest@localhost" }}"
           ports:
             - containerPort: 80
               name: http

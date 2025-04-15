@@ -80,43 +80,49 @@ data:
   csp.yaml: |-
     directives:
       child-src:
-        - '*'
-        - 'data:'
+        - '''self'''
       connect-src:
-        - '*'
-        - 'data:'
+        - '''self'''
+        - 'blob:'
+        - 'https://{{ .Values.global.domain.companion | default "companion.opencloud.test" }}/'
+        - 'wss://{{ .Values.global.domain.companion | default "companion.opencloud.test" }}/'
+        - 'https://raw.githubusercontent.com/opencloud-eu/awesome-apps/'
+        - 'https://{{ .Values.global.domain.keycloak | default "keycloak.opencloud.test" }}/'
       default-src:
-        - '*'
-        - 'data:'
+        - '''none'''
       font-src:
-        - '*'
-        - 'data:'
+        - '''self'''
       frame-ancestors:
-        - '*'
-        - 'data:'
+        - '''self'''
       frame-src:
-        - '*'
-        - 'data:'
+        - '''self'''
+        - 'blob:'
+        - 'https://embed.diagrams.net/'
+        # In contrary to bash and docker the default is given after the | character
+        - 'https://{{ .Values.global.domain.onlyoffice | default "onlyoffice.opencloud.test" }}/'
+        - 'https://{{ .Values.global.domain.collabora | default "collabora.opencloud.test" }}/'
+        # This is needed for the external-sites web extension when embedding sites
+        - 'https://docs.opencloud.eu'
       img-src:
-        - '*'
+        - '''self'''
         - 'data:'
+        - 'blob:'
+        - 'https://raw.githubusercontent.com/opencloud-eu/awesome-apps/'
+        # In contrary to bash and docker the default is given after the | character
+        - 'https://{{ .Values.global.domain.onlyoffice | default "onlyoffice.opencloud.test" }}/'
+        - 'https://{{ .Values.global.domain.collabora | default "collabora.opencloud.test" }}/'
       manifest-src:
-        - '*'
-        - 'data:'
+        - '''self'''
       media-src:
-        - '*'
-        - 'data:'
+        - '''self'''
       object-src:
-        - '*'
-        - 'data:'
+        - '''self'''
+        - 'blob:'
       script-src:
-        - '*'
-        - 'data:'
+        - '''self'''
         - '''unsafe-inline'''
-        - '''unsafe-eval'''
       style-src:
-        - '*'
-        - 'data:'
+        - '''self'''
         - '''unsafe-inline'''
 
   # Banned password list
