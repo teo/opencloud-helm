@@ -8,8 +8,8 @@ spec:
   gatewayClassName: {{ .Values.httpRoute.gateway.className }}
   infrastructure:
     annotations:
-      {{- range $key, $value := .Values.httpRoute.gateway.annotations }}
-      {{ $key }}: {{ $value | quote }}
+      {{- with .Values.httpRoute.gateway.annotations }}
+      {{- toYaml . | nindent 6 }}
       {{- end }}
   listeners:
     - name: opencloud-https
