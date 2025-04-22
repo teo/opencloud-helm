@@ -46,7 +46,7 @@ spec:
             matchLabels:
               {{- include "opencloud.selectorLabels" . | nindent 14 }}
     {{- end }}
-    {{ - if and .Values.opencloud.storage.s3.internal.enabled .Values.opencloud.storage.s3.internal.httpRoute.enabled }}
+    {{- if and .Values.opencloud.storage.s3.internal.enabled .Values.opencloud.storage.s3.internal.httpRoute.enabled }}
     - name: minio-https
       protocol: HTTPS
       port: 443
