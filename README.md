@@ -69,8 +69,8 @@ To install the chart with the release name `opencloud`:
 helm install opencloud . \
   --namespace opencloud \
   --create-namespace \
-  --set httproute.gateway.name=opencloud-gateway \
-  --set httproute.gateway.namespace=kube-system
+  --set httpRoute.gateway.name=opencloud-gateway \
+  --set httpRoute.gateway.namespace=kube-system
 ```
 
 ## Architecture
@@ -315,11 +315,11 @@ This chart includes HTTPRoute resources that can be used to expose the OpenCloud
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
-| `httproute.enabled` | Enable HTTPRoutes | `true` |
-| `httproute.gateway.name` | Gateway name | `opencloud-gateway` |
-| `httproute.gateway.namespace` | Gateway namespace | `""` (defaults to Release.Namespace) |
+| `httpRoute.enabled` | Enable HTTPRoutes | `true` |
+| `httpRoute.gateway.name` | Gateway name | `opencloud-gateway` |
+| `httpRoute.gateway.namespace` | Gateway namespace | `""` (defaults to Release.Namespace) |
 
-The following HTTPRoutes are created when `httproute.enabled` is set to `true`:
+The following HTTPRoutes are created when `httpRoute.enabled` is set to `true`:
 
 1. **OpenCloud HTTPRoute**:
    - Hostname: `global.domain.opencloud`
@@ -368,7 +368,7 @@ The following HTTPRoutes are created when `httproute.enabled` is set to `true`:
    - Port: 9300
    - Headers: Adds Permissions-Policy header to prevent browser features like interest-based advertising
 
-All HTTPRoutes are configured to use the same Gateway specified by `httproute.gateway.name` and `httproute.gateway.namespace`.
+All HTTPRoutes are configured to use the same Gateway specified by `httpRoute.gateway.name` and `httpRoute.gateway.namespace`.
 
 ## Setting Up Gateway API with Talos, Cilium, and cert-manager
 
@@ -612,8 +612,8 @@ cd opencloud-helm
 helm install opencloud . \
   --namespace opencloud \
   --create-namespace \
-  --set httproute.gateway.name=opencloud-gateway \
-  --set httproute.gateway.namespace=kube-system
+  --set httpRoute.gateway.name=opencloud-gateway \
+  --set httpRoute.gateway.namespace=kube-system
 ```
 
 ### Troubleshooting
