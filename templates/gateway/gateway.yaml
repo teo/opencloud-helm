@@ -4,6 +4,8 @@ kind: Gateway
 metadata:
   name: {{ .Values.httpRoute.gateway.name }}
   namespace: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
+  labels:
+    {{- include "opencloud.labels" . | nindent 4 }}
 spec:
   gatewayClassName: {{ .Values.httpRoute.gateway.className }}
   infrastructure:
@@ -23,7 +25,10 @@ spec:
             namespace: kube-system
       allowedRoutes:
         namespaces:
-          from: All
+          from: Selector
+          selector:
+            matchLabels:
+              {{- include "opencloud.selectorLabels" . | nindent 14 }}
     {{- if .Values.keycloak.enabled }}
     - name: keycloak-https
       protocol: HTTPS
@@ -36,7 +41,10 @@ spec:
             namespace: kube-system
       allowedRoutes:
         namespaces:
-          from: All
+          from: Selector
+          selector:
+            matchLabels:
+              {{- include "opencloud.selectorLabels" . | nindent 14 }}
     {{- end }}
     {{ - if and .Values.opencloud.storage.s3.internal.enabled .Values.opencloud.storage.s3.internal.httpRoute.enabled }}
     - name: minio-https
@@ -50,7 +58,10 @@ spec:
             namespace: kube-system
       allowedRoutes:
         namespaces:
-          from: All
+          from: Selector
+          selector:
+            matchLabels:
+              {{- include "opencloud.selectorLabels" . | nindent 14 }}
     {{- end }}
     {{- if .Values.onlyoffice.enabled }}
     - name: onlyoffice-https
@@ -64,7 +75,10 @@ spec:
             namespace: kube-system
       allowedRoutes:
         namespaces:
-          from: All
+          from: Selector
+          selector:
+            matchLabels:
+              {{- include "opencloud.selectorLabels" . | nindent 14 }}
     {{- end }}
     {{- if and .Values.onlyoffice.collaboration.enabled .Values.onlyoffice.enabled }}
     - name: collaboration-https
@@ -78,6 +92,9 @@ spec:
             namespace: kube-system
       allowedRoutes:
         namespaces:
-          from: All
+          from: Selector
+          selector:
+            matchLabels:
+              {{- include "opencloud.selectorLabels" . | nindent 14 }}
     {{- end }}
 {{- end }}
