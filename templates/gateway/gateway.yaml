@@ -24,6 +24,7 @@ spec:
       allowedRoutes:
         namespaces:
           from: All
+    {{- if .Values.keycloak.enabled }}
     - name: keycloak-https
       protocol: HTTPS
       port: 443
@@ -36,6 +37,8 @@ spec:
       allowedRoutes:
         namespaces:
           from: All
+    {{- end }}
+    {{ - if and .Values.opencloud.storage.s3.internal.enabled .Values.opencloud.storage.s3.internal.httpRoute.enabled }}
     - name: minio-https
       protocol: HTTPS
       port: 443
@@ -48,6 +51,8 @@ spec:
       allowedRoutes:
         namespaces:
           from: All
+    {{- end }}
+    {{- if .Values.onlyoffice.enabled }}
     - name: onlyoffice-https
       protocol: HTTPS
       port: 443
@@ -60,6 +65,8 @@ spec:
       allowedRoutes:
         namespaces:
           from: All
+    {{- end }}
+    {{- if and .Values.onlyoffice.collaboration.enabled .Values.onlyoffice.enabled }}
     - name: collaboration-https
       protocol: HTTPS
       port: 443
@@ -72,4 +79,5 @@ spec:
       allowedRoutes:
         namespaces:
           from: All
+    {{- end }}
 {{- end }}

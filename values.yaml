@@ -450,6 +450,10 @@ opencloud:
       internal:
         # Enable internal test MinIO instance (default: true)
         enabled: true
+        # httpRoute configuration
+        httpRoute:
+          # Enable HTTPRoute for MinIO (default: false)
+          enabled: false
         # Minio Root user
         rootUser: opencloud
         # Minio Root password
