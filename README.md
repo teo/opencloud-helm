@@ -464,7 +464,6 @@ kubectl apply -f cluster-issuer.yaml
 
 Create a Gateway resource to expose your services:
 
-FIXME we can deploy an opencloud-gateway
 
 ```yaml
 # gateway.yaml
