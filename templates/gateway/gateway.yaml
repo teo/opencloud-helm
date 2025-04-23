@@ -16,85 +16,85 @@ spec:
   listeners:
     - name: opencloud-https
       protocol: HTTPS
-      port: 443
+      port: {{ .Valuees.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.opencloud | quote }}
       tls:
         mode: Terminate
         certificateRefs:
           - name: opencloud-wildcard-tls
-            namespace: kube-system
+            namespace: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
       allowedRoutes:
         namespaces:
           from: Selector
           selector:
             matchLabels:
-              {{- include "opencloud.selectorLabels" . | nindent 14 }}
+              kubernetes.io/metadata.name: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
     {{- if .Values.keycloak.enabled }}
     - name: keycloak-https
       protocol: HTTPS
-      port: 443
+      port: {{ .Valuees.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.keycloak | quote }}
       tls:
         mode: Terminate
         certificateRefs:
           - name: opencloud-wildcard-tls
-            namespace: kube-system
+            namespace: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
       allowedRoutes:
         namespaces:
           from: Selector
           selector:
             matchLabels:
-              {{- include "opencloud.selectorLabels" . | nindent 14 }}
+              kubernetes.io/metadata.name: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
     {{- end }}
     {{- if and .Values.opencloud.storage.s3.internal.enabled .Values.opencloud.storage.s3.internal.httpRoute.enabled }}
     - name: minio-https
       protocol: HTTPS
-      port: 443
+      port: {{ .Valuees.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.minio | quote }}
       tls:
         mode: Terminate
         certificateRefs:
           - name: opencloud-wildcard-tls
-            namespace: kube-system
+            namespace: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
       allowedRoutes:
         namespaces:
           from: Selector
           selector:
             matchLabels:
-              {{- include "opencloud.selectorLabels" . | nindent 14 }}
+              kubernetes.io/metadata.name: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
     {{- end }}
     {{- if .Values.onlyoffice.enabled }}
     - name: onlyoffice-https
       protocol: HTTPS
-      port: 443
+      port: {{ .Valuees.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.onlyoffice | quote }}
       tls:
         mode: Terminate
         certificateRefs:
           - name: opencloud-wildcard-tls
-            namespace: kube-system
+            namespace: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
       allowedRoutes:
         namespaces:
           from: Selector
           selector:
             matchLabels:
-              {{- include "opencloud.selectorLabels" . | nindent 14 }}
+              kubernetes.io/metadata.name: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
     {{- end }}
     {{- if and .Values.onlyoffice.collaboration.enabled .Values.onlyoffice.enabled }}
     - name: collaboration-https
       protocol: HTTPS
-      port: 443
+      port: {{ .Valuees.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.wopi | quote }}
       tls:
         mode: Terminate
         certificateRefs:
           - name: opencloud-wildcard-tls
-            namespace: kube-system
+            namespace: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
       allowedRoutes:
         namespaces:
           from: Selector
           selector:
             matchLabels:
-              {{- include "opencloud.selectorLabels" . | nindent 14 }}
+              kubernetes.io/metadata.name: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
     {{- end }}
 {{- end }}
