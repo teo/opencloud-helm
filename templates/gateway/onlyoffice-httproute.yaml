@@ -19,6 +19,20 @@ spec:
         - path:
             type: PathPrefix
             value: /
+      filters:
+        {{- if eq .Values.httpRoute.gateway.className "traefik" }}
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: add-x-forwarded-proto-https
+        {{- else }}
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            add:
+              - name: X-Forwarded-Proto
+                value: https
+        {{- end }}
       backendRefs:
         - name: {{ include "opencloud.fullname" . }}-onlyoffice
           port: 80
