@@ -810,7 +810,7 @@ git clone https://github.com/your-repo/opencloud-helm.git
 cd opencloud-helm
 ```
 
-Customize the chart to use Ingress objects instead of the newer gatway api
+Customize the chart to use Ingress objects instead of the newer gateway API
 
 ```yaml
 global:
