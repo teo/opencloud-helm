@@ -521,4 +521,4 @@ httpRoute:
     annotations:
     # Gateway annotations
     infrastructure:
-      annotations:
+      annotations: {}

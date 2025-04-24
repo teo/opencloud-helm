@@ -12,11 +12,10 @@ metadata:
   {{- end }}
 spec:
   gatewayClassName: {{ .Values.httpRoute.gateway.className }}
+  {{- with .Values.httpRoute.gateway.infrastructure }}
   infrastructure:
-    {{- with .Values.httpRoute.gateway.infrastructure.annotations }}
-    annotations:
       {{- toYaml . | nindent 4 }}
-    {{- end }}
+  {{- end }}
   listeners:
     - name: opencloud-https
       protocol: HTTPS
