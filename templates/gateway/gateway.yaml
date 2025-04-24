@@ -6,13 +6,17 @@ metadata:
   namespace: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
   labels:
     {{- include "opencloud.labels" . | nindent 4 }}
+  {{- with .Values.httpRoute.gateway.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   gatewayClassName: {{ .Values.httpRoute.gateway.className }}
   infrastructure:
+    {{- with .Values.httpRoute.gateway.infrastructure.annotations }}
     annotations:
-      {{- with .Values.httpRoute.gateway.annotations }}
-      {{- toYaml . | nindent 6 }}
-      {{- end }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
   listeners:
     - name: opencloud-https
       protocol: HTTPS
