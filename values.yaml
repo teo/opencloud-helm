@@ -381,10 +381,13 @@ opencloud:
   adminPassword: admin
   # Create demo users
   createDemoUsers: false
-  # Additional services to start (comma-separated list)
-  additionalServices: ""
+  # Additional services to start
+  additionalServices: []
   # Services to exclude from starting
-  excludeServices: "idp"
+  excludeServices:
+    - "idp"
+  env: []
+  envFrom: []
   # Resources allocation
   resources:
     requests:
@@ -521,4 +524,4 @@ httpRoute:
     annotations:
     # Gateway annotations
     infrastructure:
-      annotations:
+      annotations: {}

@@ -119,6 +119,10 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh"]
           args: ["-c", "opencloud init || true; opencloud server"]
+          {{- with .Values.opencloud.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
             # OpenCloud URL
             - name: OC_URL
@@ -134,11 +138,14 @@ spec:
             - name: OC_LOG_PRETTY
               value: {{ .Values.opencloud.logPretty | quote }}
             # Enable services that are not started automatically
+            {{- with .Values.opencloud.additionalServices }}
             - name: OC_ADD_RUN_SERVICES
-              value: {{ .Values.opencloud.additionalServices | quote }}
-            # Only exclude idp
+              value: {{ join "," . | quote }}
+            {{- end }}
+            {{- with .Values.opencloud.excludeServices }}
             - name: OC_EXCLUDE_RUN_SERVICES
-              value: "idp"
+              value: {{ join "," . | quote }}
+            {{- end }}
             # Do not use SSL between proxy and OpenCloud
             - name: PROXY_TLS
               value: "false"
@@ -256,6 +263,9 @@ spec:
               value: {{ if .Values.opencloud.storage.s3.external.enabled }}{{ .Values.opencloud.storage.s3.external.bucket | quote }}{{ else }}{{ .Values.opencloud.storage.s3.internal.bucketName | quote }}{{ end }}
             - name: STORAGE_USERS_DECOMPOSEDS3_CREATE_BUCKET
               value: {{ if .Values.opencloud.storage.s3.external.enabled }}{{ .Values.opencloud.storage.s3.external.createBucket | default true | quote }}{{ else }}"true"{{ end }}
+            {{- with .Values.opencloud.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           ports:
             - name: http
               containerPort: 9200
