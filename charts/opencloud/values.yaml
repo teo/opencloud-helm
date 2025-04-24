@@ -38,6 +38,8 @@ global:
     minio: minio.opencloud.test
     # Domain for WOPI server
     wopi: wopiserver.opencloud.test
+    # Domain for Collabora CODE
+    collabora: collabora.opencloud.test
     # Domain for OnlyOffice
     onlyoffice: onlyoffice.opencloud.test
     # Domain for Companion
@@ -238,6 +240,29 @@ webExtensions:
       enabled: true
       repository: opencloudeu/web-extensions
       tag: unzip-1.0.0
+
+# =====================================================================
+# COLLABORATION (COLLABORA)
+# =====================================================================
+
+collabora:
+  enabled: false
+  repository: collabora/code
+  tag: 24.04.13.2.1
+  pullPolicy: IfNotPresent
+  ssl:
+    enabled: true
+    verification: true
+  admin:
+    user: admin
+    password: admin
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 1
+      memory: 1Gi
 
 # =====================================================================
 # COLLABORATION (ONLYOFFICE)
