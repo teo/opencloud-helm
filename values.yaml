@@ -519,3 +519,6 @@ httpRoute:
     namespace: ""
     # Gateway annotations
     annotations:
+    # Gateway annotations
+    infrastructure:
+      annotations:
