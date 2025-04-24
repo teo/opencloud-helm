@@ -3,7 +3,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ include "opencloud.opencloud.fullname" . }}-config
-  namespace: {{ .Values.namespace }}
+  namespace: {{ include "opencloud.namespace" . }}
   annotations:
     "helm.sh/resource-policy": "keep"
   labels:
@@ -27,7 +27,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ include "opencloud.opencloud.fullname" . }}-data
-  namespace: {{ .Values.namespace }}
+  namespace: {{ include "opencloud.namespace" . }}
   annotations:
     "helm.sh/resource-policy": "keep"
   labels:

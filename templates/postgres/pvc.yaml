@@ -3,7 +3,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ include "opencloud.postgres.fullname" . }}-data
-  namespace: {{ .Values.namespace }}
+  namespace: {{ include "opencloud.namespace" . }}
   annotations:
     "helm.sh/resource-policy": "keep"
   labels:
