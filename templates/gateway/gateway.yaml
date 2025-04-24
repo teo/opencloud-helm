@@ -1,0 +1,100 @@
+{{- if .Values.httpRoute.gateway.create }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ .Values.httpRoute.gateway.name }}
+  namespace: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
+  labels:
+    {{- include "opencloud.labels" . | nindent 4 }}
+spec:
+  gatewayClassName: {{ .Values.httpRoute.gateway.className }}
+  infrastructure:
+    annotations:
+      {{- with .Values.httpRoute.gateway.annotations }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+  listeners:
+    - name: opencloud-https
+      protocol: HTTPS
+      port: {{ .Valuees.httpRoute.gateway.port | default 443 }}
+      hostname: {{ .Values.global.domain.opencloud | quote }}
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: opencloud-wildcard-tls
+            namespace: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
+    {{- if .Values.keycloak.enabled }}
+    - name: keycloak-https
+      protocol: HTTPS
+      port: {{ .Valuees.httpRoute.gateway.port | default 443 }}
+      hostname: {{ .Values.global.domain.keycloak | quote }}
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: opencloud-wildcard-tls
+            namespace: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
+    {{- end }}
+    {{- if and .Values.opencloud.storage.s3.internal.enabled .Values.opencloud.storage.s3.internal.httpRoute.enabled }}
+    - name: minio-https
+      protocol: HTTPS
+      port: {{ .Valuees.httpRoute.gateway.port | default 443 }}
+      hostname: {{ .Values.global.domain.minio | quote }}
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: opencloud-wildcard-tls
+            namespace: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
+    {{- end }}
+    {{- if .Values.onlyoffice.enabled }}
+    - name: onlyoffice-https
+      protocol: HTTPS
+      port: {{ .Valuees.httpRoute.gateway.port | default 443 }}
+      hostname: {{ .Values.global.domain.onlyoffice | quote }}
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: opencloud-wildcard-tls
+            namespace: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
+    {{- end }}
+    {{- if and .Values.onlyoffice.collaboration.enabled .Values.onlyoffice.enabled }}
+    - name: collaboration-https
+      protocol: HTTPS
+      port: {{ .Valuees.httpRoute.gateway.port | default 443 }}
+      hostname: {{ .Values.global.domain.wopi | quote }}
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: opencloud-wildcard-tls
+            namespace: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
+    {{- end }}
+{{- end }}
