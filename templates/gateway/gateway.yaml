@@ -16,7 +16,7 @@ spec:
   listeners:
     - name: opencloud-https
       protocol: HTTPS
-      port: {{ .Valuees.httpRoute.gateway.port | default 443 }}
+      port: {{ .Values.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.opencloud | quote }}
       tls:
         mode: Terminate
@@ -32,7 +32,7 @@ spec:
     {{- if .Values.keycloak.enabled }}
     - name: keycloak-https
       protocol: HTTPS
-      port: {{ .Valuees.httpRoute.gateway.port | default 443 }}
+      port: {{ .Values.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.keycloak | quote }}
       tls:
         mode: Terminate
@@ -49,7 +49,7 @@ spec:
     {{- if and .Values.opencloud.storage.s3.internal.enabled .Values.opencloud.storage.s3.internal.httpRoute.enabled }}
     - name: minio-https
       protocol: HTTPS
-      port: {{ .Valuees.httpRoute.gateway.port | default 443 }}
+      port: {{ .Values.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.minio | quote }}
       tls:
         mode: Terminate
@@ -66,7 +66,7 @@ spec:
     {{- if .Values.onlyoffice.enabled }}
     - name: onlyoffice-https
       protocol: HTTPS
-      port: {{ .Valuees.httpRoute.gateway.port | default 443 }}
+      port: {{ .Values.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.onlyoffice | quote }}
       tls:
         mode: Terminate
@@ -83,7 +83,7 @@ spec:
     {{- if and .Values.onlyoffice.collaboration.enabled .Values.onlyoffice.enabled }}
     - name: collaboration-https
       protocol: HTTPS
-      port: {{ .Valuees.httpRoute.gateway.port | default 443 }}
+      port: {{ .Values.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.wopi | quote }}
       tls:
         mode: Terminate
