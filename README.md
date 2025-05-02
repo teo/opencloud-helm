@@ -316,8 +316,52 @@ This chart includes HTTPRoute resources that can be used to expose the OpenCloud
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
 | `httpRoute.enabled` | Enable HTTPRoutes | `true` |
+| `httpRoute.gateway.create` | Create Gateway resource | `false` |
 | `httpRoute.gateway.name` | Gateway name | `opencloud-gateway` |
 | `httpRoute.gateway.namespace` | Gateway namespace | `""` (defaults to Release.Namespace) |
+| `httpRoute.gateway.className` | Gateway class | `cilium` |
+
+### Advanced Configuration Options
+
+The chart supports several advanced configuration options introduced in recent updates:
+
+#### Environment Variables
+
+You can set custom environment variables for the OpenCloud deployment:
+
+```yaml
+opencloud:
+  env:
+    - name: MY_VARIABLE
+      value: "my-value"
+    - name: ANOTHER_VARIABLE
+      value: "another-value"
+```
+
+Or via command line:
+```bash
+--set opencloud.env[0].name=MY_VARIABLE,opencloud.env[0].value=my-value
+```
+
+#### Proxy Basic Auth
+
+Enable basic authentication for the proxy:
+
+```yaml
+opencloud:
+  proxy:
+    basicAuth:
+      enabled: true
+```
+
+Or via command line:
+```bash
+--set opencloud.proxy.basicAuth.enabled=true
+```
+
+#### Improved Namespace Handling
+
+The chart now automatically uses the correct namespace across all resources, eliminating the need to manually set the namespace in multiple places.
 
 The following HTTPRoutes are created when `httpRoute.enabled` is set to `true`:
 
