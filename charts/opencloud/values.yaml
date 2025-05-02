@@ -506,7 +506,8 @@ opencloud:
 # Requires Gateway API resources and suitable controller installed within the cluster
 # (see: https://gateway-api.sigs.k8s.io/guides/)
 httpRoute:
-  enabled: true
+  # Enable HTTPRoute resources (set to true to create Gateway API routes)
+  enabled: false
 
   # Gateway configuration
   gateway:

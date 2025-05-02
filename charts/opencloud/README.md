@@ -66,7 +66,7 @@ Please ensure that your PR follows best practices and includes necessary documen
 To install the chart with the release name `opencloud`:
 
 ```bash
-helm install opencloud . \
+helm install opencloud ./charts/opencloud \
   --namespace opencloud \
   --create-namespace \
   --set httpRoute.gateway.name=opencloud-gateway \
@@ -604,11 +604,11 @@ Finally, install OpenCloud using Helm:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-repo/opencloud-helm.git
+git clone https://github.com/opencloud-eu/helm.git opencloud-helm
 cd opencloud-helm
 
 # Install OpenCloud
-helm install opencloud . \
+helm install opencloud ./charts/opencloud \
   --namespace opencloud \
   --create-namespace \
   --set httpRoute.gateway.name=opencloud-gateway \
@@ -669,7 +669,7 @@ https://docs.opencloud.eu/docs/admin/getting-started/docker/docker
 Deployment from the file system:
 
 ```
-$ helm install opencloud -n opencloud --create-namespace ./opencloud-dev --set=adminPassword="<MY-SECURE-PASSWORD>" --set=url="<PUBLIC-URL>"
+$ helm install opencloud -n opencloud --create-namespace ./charts/opencloud-dev --set=adminPassword="<MY-SECURE-PASSWORD>" --set=url="<PUBLIC-URL>"
 ```
 
 It is important that the public-url is reachable, and forwarded to the backend-service opencloud-service:443,
@@ -678,7 +678,7 @@ otherwise login will not be possible or the message "missing or invalid config" 
 For testing with the default settings port-forwarding from localhost can be used:
 
 ```
-$ helm install opencloud -n opencloud --create-namespace ./opencloud-dev
+$ helm install opencloud -n opencloud --create-namespace ./charts/opencloud-dev
 
   Release "opencloud" does not exist. Installing it now.
   NAME: opencloud
@@ -732,7 +732,7 @@ $ helm uninstall -n opencloud opencloud
   release "opencloud" uninstalled
 ```
 
-The data PVC is configured to be kept, so it will survive uninstall and install of opencloud-dev
+The data PVC is configured to be kept, so it will survive uninstall and install of charts/opencloud-dev
 
 ## 📜 License
 
