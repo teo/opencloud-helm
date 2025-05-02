@@ -511,7 +511,7 @@ httpRoute:
   # Gateway configuration
   gateway:
     # Create the gateway
-    create: true
+    create: false
     # HTTPS Port to listen to (k3s traefik defaults to 8443)
     port: 443
     # Gateway name
