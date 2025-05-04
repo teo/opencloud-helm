@@ -10,7 +10,9 @@ Welcome to the **OpenCloud Helm Charts** repository! This repository is intended
 - [Community](#-community)
 - [Contributing](#-contributing)
 - [Prerequisites](#prerequisites)
-- [Installing the Helm Charts](#-installing-the-helm-charts)
+- [Available Charts](#-available-charts)
+  - [Production Chart](#production-chart-chartsopencloud)
+  - [Development Chart](#development-chart-chartsopencloud-dev)
 - [Architecture](#architecture)
   - [Component Interaction Diagram](#component-interaction-diagram)
 - [Configuration](#configuration)
@@ -25,7 +27,6 @@ Welcome to the **OpenCloud Helm Charts** repository! This repository is intended
 - [Gateway API Configuration](#gateway-api-configuration)
   - [HTTPRoute Settings](#httproute-settings)
 - [Setting Up Gateway API with Talos, Cilium, and cert-manager](#setting-up-gateway-api-with-talos-cilium-and-cert-manager)
-- [Installing the DEV Helm Charts](#-installing-the-dev-helm-charts)
 - [License](#-license)
 - [Community Maintained](#community-maintained)
 
@@ -61,21 +62,50 @@ Please ensure that your PR follows best practices and includes necessary documen
 - PV provisioner support in the underlying infrastructure (if persistence is enabled)
 - External ingress controller (e.g., Cilium Gateway API) for routing traffic to the services
 
-## 📦 Installing the Helm Charts
+## 📦 Available Charts
 
-To install the chart with the release name `opencloud`:
+This repository contains the following charts:
+
+### Production Chart (`charts/opencloud`)
+
+The complete OpenCloud deployment with all components for production use:
+
+- Full microservices architecture
+- Keycloak for authentication
+- MinIO for object storage
+- Document editing with Collabora and/or OnlyOffice
+- Full Gateway API integration
 
 ```bash
 helm install opencloud ./charts/opencloud \
   --namespace opencloud \
   --create-namespace \
+  --set httpRoute.enabled=true \
   --set httpRoute.gateway.name=opencloud-gateway \
   --set httpRoute.gateway.namespace=kube-system
 ```
 
+[View Production Chart Documentation](./charts/opencloud/README.md)
+
+### Development Chart (`charts/opencloud-dev`)
+
+A lightweight single-container deployment for development and testing:
+
+- Simplified deployment (single Docker container)
+- Minimal resource requirements
+- Quick setup for testing
+
+```bash
+helm install opencloud ./charts/opencloud-dev \
+  --namespace opencloud \
+  --create-namespace
+```
+
+[View Development Chart Documentation](./charts/opencloud-dev/README.md)
+
 ## Architecture
 
-This Helm chart deploys the following components:
+The production chart (`charts/opencloud`) deploys the following components:
 
 1. **OpenCloud** - Main application (fork of ownCloud Infinite Scale)
 2. **Keycloak** - Authentication provider with OpenID Connect
@@ -173,7 +203,7 @@ Key interactions:
 
 ## Configuration
 
-The following table lists the configurable parameters of the OpenCloud chart and their default values.
+The following sections outline the main configuration parameters for the production chart (`charts/opencloud`). For a complete list of configuration options, please refer to the [values.yaml](./charts/opencloud/values.yaml) file.
 
 ### Global Settings
 
@@ -309,7 +339,7 @@ The following table lists the configurable parameters of the OpenCloud chart and
 
 ## Gateway API Configuration
 
-This chart includes HTTPRoute resources that can be used to expose the OpenCloud, Keycloak, and MinIO services externally. The HTTPRoutes are configured to route traffic to the respective services.
+The production chart includes HTTPRoute resources that can be used to expose the OpenCloud, Keycloak, and MinIO services externally. The HTTPRoutes are configured to route traffic to the respective services.
 
 ### HTTPRoute Settings
 
@@ -323,7 +353,7 @@ This chart includes HTTPRoute resources that can be used to expose the OpenCloud
 
 ### Advanced Configuration Options
 
-The chart supports several advanced configuration options introduced in recent updates:
+The production chart supports several advanced configuration options introduced in recent updates:
 
 #### Environment Variables
 
@@ -416,7 +446,7 @@ All HTTPRoutes are configured to use the same Gateway specified by `httpRoute.ga
 
 ## Setting Up Gateway API with Talos, Cilium, and cert-manager
 
-This section provides a practical guide to setting up the Gateway API with Talos, Cilium, and cert-manager for OpenCloud.
+This section provides a practical guide to setting up the Gateway API with Talos, Cilium, and cert-manager for the production OpenCloud chart.
 
 ### Prerequisites
 
@@ -648,13 +678,14 @@ Finally, install OpenCloud using Helm:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-repo/opencloud-helm.git
+git clone https://github.com/opencloud-eu/helm.git opencloud-helm
 cd opencloud-helm
 
 # Install OpenCloud
-helm install opencloud . \
+helm install opencloud ./charts/opencloud \
   --namespace opencloud \
   --create-namespace \
+  --set httpRoute.enabled=true \
   --set httpRoute.gateway.name=opencloud-gateway \
   --set httpRoute.gateway.namespace=kube-system
 ```
@@ -700,83 +731,6 @@ kubectl get pods -n opencloud -l app.kubernetes.io/component=onlyoffice-redis
 kubectl get pods -n opencloud -l app.kubernetes.io/component=onlyoffice-rabbitmq
 ```
 
-## 📦 Installing the DEV Helm Charts
-
-Spin up a temporary local instance of OpenCloud using a single Docker image.
-
-**Note:** This chart is primarily intended for Kubernetes deployment development and testing environments, 
-not for production use. It provides a simplified setup with minimal configuration.
-
-This version deploys opencloud as a single Docker image as described here:
-https://docs.opencloud.eu/docs/admin/getting-started/docker/docker
-
-Deployment from the file system:
-
-```
-$ helm install opencloud -n opencloud --create-namespace ./charts/opencloud-dev --set=adminPassword="<MY-SECURE-PASSWORD>" --set=url="<PUBLIC-URL>"
-```
-
-It is important that the public-url is reachable, and forwarded to the backend-service opencloud-service:443,
-otherwise login will not be possible or the message "missing or invalid config" is shown.
-
-For testing with the default settings port-forwarding from localhost can be used:
-
-```
-$ helm install opencloud -n opencloud --create-namespace ./charts/opencloud-dev
-
-  Release "opencloud" does not exist. Installing it now.
-  NAME: opencloud
-  LAST DEPLOYED: Wed Apr  2 01:16:19 2025
-  NAMESPACE: opencloud
-  STATUS: deployed
-  REVISION: 1
-  TEST SUITE: None
-```
-
-Establish a port-forwarding from localhost
-
-```
-$ kubectl port-forward -n opencloud svc/opencloud-service 9200:443
-
-  Forwarding from 127.0.0.1:9200 -> 9200
-  Forwarding from [::1]:9200 -> 9200
-  ...
-```
-
-Now open in a browser the url: [https://localhost:9200](https://localhost:9200) while 
-the port forwarding is active.
-
-You need to accept the risc of a self signed certificate.
-(see [Common Issues & Help](https://docs.opencloud.eu/docs/admin/getting-started/docker/#troubleshooting)) in 
-the getting started with Docker documentation.
-
-Now you can login with the default admin / admin
-
-If you want to change the public URL you can upgrade the deployment with the following command:
-
-```
-$ helm upgrade opencloud -n opencloud ./charts/opencloud-dev --set=url="<NEW-PUBLIC-URL>"
-
-  Release "opencloud" has been upgraded. Happy Helming!
-  NAME: opencloud
-  LAST DEPLOYED: Wed Apr  2 01:42:51 2025
-  NAMESPACE: opencloud
-  STATUS: deployed
-  REVISION: 2
-  TEST SUITE: None
-```
-
-The opencloud deployment will be restarted and is availble after a few seconds configured for the new url.
-
-If you want to uninstall opencloud this can be done with 
-
-```
-$ helm uninstall -n opencloud opencloud
-
-  release "opencloud" uninstalled
-```
-
-The data PVC is configured to be kept, so it will survive uninstall and install of opencloud-dev
 
 ## 📜 License
 
