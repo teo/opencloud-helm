@@ -345,7 +345,8 @@ The production chart includes HTTPRoute resources that can be used to expose the
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
-| `httpRoute.enabled` | Enable HTTPRoutes | `true` |
+| `httpRoute.enabled` | Enable HTTPRoutes | `false` |
+Comment
 | `httpRoute.gateway.create` | Create Gateway resource | `false` |
 | `httpRoute.gateway.name` | Gateway name | `opencloud-gateway` |
 | `httpRoute.gateway.namespace` | Gateway namespace | `""` (defaults to Release.Namespace) |
