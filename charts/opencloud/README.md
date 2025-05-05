@@ -10,9 +10,7 @@ Welcome to the **OpenCloud Helm Charts** repository! This repository is intended
 - [Community](#-community)
 - [Contributing](#-contributing)
 - [Prerequisites](#prerequisites)
-- [Available Charts](#-available-charts)
-  - [Production Chart](#production-chart-chartsopencloud)
-  - [Development Chart](#development-chart-chartsopencloud-dev)
+- [Installing the Helm Charts](#-installing-the-helm-charts)
 - [Architecture](#architecture)
   - [Component Interaction Diagram](#component-interaction-diagram)
 - [Configuration](#configuration)
@@ -27,6 +25,7 @@ Welcome to the **OpenCloud Helm Charts** repository! This repository is intended
 - [Gateway API Configuration](#gateway-api-configuration)
   - [HTTPRoute Settings](#httproute-settings)
 - [Setting Up Gateway API with Talos, Cilium, and cert-manager](#setting-up-gateway-api-with-talos-cilium-and-cert-manager)
+- [Development Chart](#-development-chart)
 - [License](#-license)
 - [Community Maintained](#community-maintained)
 
@@ -62,19 +61,24 @@ Please ensure that your PR follows best practices and includes necessary documen
 - PV provisioner support in the underlying infrastructure (if persistence is enabled)
 - External ingress controller (e.g., Cilium Gateway API) for routing traffic to the services
 
-## 📦 Available Charts
+## 📦 Installation
 
-This repository contains the following charts:
+To install the chart with the release name `opencloud`:
 
-### Production Chart (`charts/opencloud`)
+```bash
+# Navigate to the chart directory first
+cd /path/to/helm-repo/charts/opencloud
 
-The complete OpenCloud deployment with all components for production use:
+# Then run the installation command
+helm install opencloud . \
+  --namespace opencloud \
+  --create-namespace \
+  --set httpRoute.enabled=true \
+  --set httpRoute.gateway.name=opencloud-gateway \
+  --set httpRoute.gateway.namespace=kube-system
+```
 
-- Full microservices architecture
-- Keycloak for authentication
-- MinIO for object storage
-- Document editing with Collabora and/or OnlyOffice
-- Full Gateway API integration
+Alternatively, from the repository root:
 
 ```bash
 helm install opencloud ./charts/opencloud \
@@ -85,27 +89,9 @@ helm install opencloud ./charts/opencloud \
   --set httpRoute.gateway.namespace=kube-system
 ```
 
-[View Production Chart Documentation](./charts/opencloud/README.md)
-
-### Development Chart (`charts/opencloud-dev`)
-
-A lightweight single-container deployment for development and testing:
-
-- Simplified deployment (single Docker container)
-- Minimal resource requirements
-- Quick setup for testing
-
-```bash
-helm install opencloud ./charts/opencloud-dev \
-  --namespace opencloud \
-  --create-namespace
-```
-
-[View Development Chart Documentation](./charts/opencloud-dev/README.md)
-
 ## Architecture
 
-The production chart (`charts/opencloud`) deploys the following components:
+This Helm chart deploys the following components:
 
 1. **OpenCloud** - Main application (fork of ownCloud Infinite Scale)
 2. **Keycloak** - Authentication provider with OpenID Connect
@@ -203,7 +189,7 @@ Key interactions:
 
 ## Configuration
 
-The following sections outline the main configuration parameters for the production chart (`charts/opencloud`). For a complete list of configuration options, please refer to the [values.yaml](./charts/opencloud/values.yaml) file.
+The following table lists the configurable parameters of the OpenCloud chart and their default values.
 
 ### Global Settings
 
@@ -339,60 +325,15 @@ The following sections outline the main configuration parameters for the product
 
 ## Gateway API Configuration
 
-The production chart includes HTTPRoute resources that can be used to expose the OpenCloud, Keycloak, and MinIO services externally. The HTTPRoutes are configured to route traffic to the respective services.
+This chart includes HTTPRoute resources that can be used to expose the OpenCloud, Keycloak, and MinIO services externally. The HTTPRoutes are configured to route traffic to the respective services.
 
 ### HTTPRoute Settings
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
-| `httpRoute.enabled` | Enable HTTPRoutes | `false` |
-Comment
-| `httpRoute.gateway.create` | Create Gateway resource | `false` |
+| `httpRoute.enabled` | Enable HTTPRoutes | `true` |
 | `httpRoute.gateway.name` | Gateway name | `opencloud-gateway` |
 | `httpRoute.gateway.namespace` | Gateway namespace | `""` (defaults to Release.Namespace) |
-| `httpRoute.gateway.className` | Gateway class | `cilium` |
-
-### Advanced Configuration Options
-
-The production chart supports several advanced configuration options introduced in recent updates:
-
-#### Environment Variables
-
-You can set custom environment variables for the OpenCloud deployment:
-
-```yaml
-opencloud:
-  env:
-    - name: MY_VARIABLE
-      value: "my-value"
-    - name: ANOTHER_VARIABLE
-      value: "another-value"
-```
-
-Or via command line:
-```bash
---set opencloud.env[0].name=MY_VARIABLE,opencloud.env[0].value=my-value
-```
-
-#### Proxy Basic Auth
-
-Enable basic authentication for the proxy:
-
-```yaml
-opencloud:
-  proxy:
-    basicAuth:
-      enabled: true
-```
-
-Or via command line:
-```bash
---set opencloud.proxy.basicAuth.enabled=true
-```
-
-#### Improved Namespace Handling
-
-The chart now automatically uses the correct namespace across all resources, eliminating the need to manually set the namespace in multiple places.
 
 The following HTTPRoutes are created when `httpRoute.enabled` is set to `true`:
 
@@ -447,7 +388,7 @@ All HTTPRoutes are configured to use the same Gateway specified by `httpRoute.ga
 
 ## Setting Up Gateway API with Talos, Cilium, and cert-manager
 
-This section provides a practical guide to setting up the Gateway API with Talos, Cilium, and cert-manager for the production OpenCloud chart.
+This section provides a practical guide to setting up the Gateway API with Talos, Cilium, and cert-manager for OpenCloud.
 
 ### Prerequisites
 
@@ -732,10 +673,13 @@ kubectl get pods -n opencloud -l app.kubernetes.io/component=onlyoffice-redis
 kubectl get pods -n opencloud -l app.kubernetes.io/component=onlyoffice-rabbitmq
 ```
 
+## 📦 Development Chart
+
+For a simplified development version of OpenCloud using a single Docker container, please refer to the [Development Chart Documentation](../opencloud-dev/README.md).
 
 ## 📜 License
 
-This project is licensed under the **AGPLv3** licence. See the [LICENSE](LICENSE) file for more details.
+This project is licensed under the **AGPLv3** licence. See the [LICENSE](../../LICENSE) file for more details.
 
 ## Community Maintained
 
