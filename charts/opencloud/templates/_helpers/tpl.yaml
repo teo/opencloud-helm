@@ -139,12 +139,7 @@ Create a fully qualified Tika name.
 {{- printf "%s-tika" (include "opencloud.fullname" .) | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
-{{/*
-Return the namespace to use
-*/}}
-{{- define "opencloud.namespace" -}}
-{{- .Release.Namespace -}}
-{{- end }}
+{{/* namespace helper removed - use .Release.Namespace directly */}}
 
 {{/*
 Return the appropriate apiVersion for ingress
