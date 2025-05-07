@@ -21,8 +21,6 @@
 # GLOBAL SETTINGS
 # =====================================================================
 
-# Deprecated: Namespace is now controlled by Helm (.Release.Namespace)
-# namespace: ""
 # Create the namespace if it doesn't exist
 createNamespace: true
 
