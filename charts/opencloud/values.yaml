@@ -561,7 +561,7 @@ ingress:
   # onlyoffice requires adding an X-Forwarded-Proto header to the request.
   # The chart currently knows how to add this header for traefik, nginx,
   # haproxy, contour, and istio. PR welcome.
-  ingressClassName: traefik
+  ingressClassName: ""
   # Ingress annotations applied to all ingress objects
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt

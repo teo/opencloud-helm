@@ -24,7 +24,9 @@ metadata:
     istio.io/request-headers: "X-Forwarded-Proto: https"
     {{- end }}
 spec:
+  {{- if .Values.ingress.ingressClassName }}
   ingressClassName: {{ .Values.ingress.ingressClassName | quote }}
+  {{- end }}
   {{- if .Values.global.tls.enabled }}
   tls:
     - hosts:

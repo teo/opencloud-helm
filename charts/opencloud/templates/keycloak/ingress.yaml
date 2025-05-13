@@ -7,7 +7,9 @@ metadata:
   annotations:
     {{- toYaml .Values.ingress.annotations | nindent 4 }}
 spec:
+  {{- if .Values.ingress.ingressClassName }}
   ingressClassName: {{ .Values.ingress.ingressClassName | quote }}
+  {{- end }}
   {{- if .Values.global.tls.enabled }}
   tls:
     - hosts:
