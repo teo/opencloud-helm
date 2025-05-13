@@ -203,9 +203,7 @@ The following table lists the configurable parameters of the OpenCloud chart and
 | `global.domain.onlyoffice` | Domain for OnlyOffice | `onlyoffice.opencloud.test` |
 | `global.domain.companion` | Domain for Companion | `companion.opencloud.test` |
 | `global.tls.enabled` | Enable TLS (set to false when using gateway TLS termination externally) | `false` |
-| `global.tls.selfSigned` | Use self-signed certificates | `true` |
-| `global.tls.acmeEmail` | ACME email for Let's Encrypt | `example@example.org` |
-| `global.tls.acmeCAServer` | ACME CA server | `https://acme-v02.api.letsencrypt.org/directory` |
+| `global.tls.secretName` | secretName for TLS certificate | `""` |
 | `global.storage.storageClass` | Storage class for persistent volumes | `""` |
 
 ### Image Settings
