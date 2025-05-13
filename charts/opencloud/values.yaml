@@ -555,13 +555,27 @@ httpRoute:
 
 # Ingress configuration
 ingress:
-  # Enable Ingress
+  # Whether to enable ingress resources for components
   enabled: false
-  # ingress class to use (defaults to traefik)
-  # onlyoffice requires adding an X-Forwarded-Proto header to the request.
-  # The chart currently knows how to add this header for traefik, nginx,
-  # haproxy, contour, and istio. PR welcome.
+
+  # The ingress class name to use (e.g., nginx, traefik). Leave empty to use the cluster default.
+  # Note: This sets the Kubernetes `spec.ingressClassName` field.
   ingressClassName: ""
-  # Ingress annotations applied to all ingress objects
+
+  # Some components (e.g., OnlyOffice) require the X-Forwarded-Proto header to be set.
+  #
+  # Set 'annotationsPreset' to inject known ingress-controller-specific annotations
+  # for injecting the header. Supported values: nginx, traefik, haproxy, contour, istio
+  #
+  # If set to "traefik" and OnlyOffice is enabled, the chart will also create a Middleware named
+  # 'add-x-forwarded-proto-https' in the release namespace and attach it to the OnlyOffice Ingress.
+  #
+  # These annotations are added in addition to any defined in 'annotations'.
+  # If there's a conflict, Helm will error. To avoid this, set annotationsPreset: ""
+  # and define all annotations manually (including creating any required Middleware).
+  annotationsPreset: ""  # optional, default ""
+
+  # Custom annotations applied to all ingress resources.
+  # These are merged with any annotations from 'annotationsPreset' (if set).
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt

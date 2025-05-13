@@ -827,11 +827,10 @@ httpRoute:
 # Enable ingress
 ingress:
   enabled: true
-  # set an Ingress class name (defaults to traefik)
   # onlyoffice requires adding an X-Forwarded-Proto header to the request.
   # The chart currently knows how to add this header for traefik, nginx,
   # haproxy, contour, and istio. PR welcome.
-  ingressClassName: traefik
+  annotationsPreset: "traefik"  # optional, default ""
   annotations:
     cert-manager.io/cluster-issuer: selfsigned-issuer
 ```
@@ -844,6 +843,33 @@ helm install opencloud . \
   --set httpRoute.gateway.name=opencloud-gateway \
   --set httpRoute.gateway.namespace=kube-system
 ```
+
+
+### 🔧 Traefik Middleware for OnlyOffice
+If you enable:
+```yaml
+ingress:
+  enabled: true
+  annotationsPreset: "traefik"
+onlyoffice:
+  enabled: true
+```
+
+The chart will automatically:
+* Create a Traefik `Middleware` resource named `add-x-forwarded-proto-https` in the chart's namespace.
+* Attach that Middleware to the OnlyOffice Ingress via:
+  ```yaml
+  traefik.ingress.kubernetes.io/router.middlewares: <namespace>-add-x-forwarded-proto-https@kubernetescrd
+  ```
+
+If you disable the preset and define custom annotations:
+```yaml
+annotationsPreset: ""
+ingress.annotations:
+  traefik.ingress.kubernetes.io/router.middlewares: my-custom-middleware@kubernetescrd
+```
+Then you are responsible for creating the referenced Middleware yourself.
+
 
 ## 📜 License
 
