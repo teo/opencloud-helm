@@ -21,8 +21,8 @@ spec:
     spec:
       containers:
         - name: collabora
-          image: {{ .Values.collabora.repository }}:{{ .Values.collabora.tag }}
-          imagePullPolicy: {{ .Values.collabora.pullPolicy | default "IfNotPresent" }}
+          image: {{ .Values.collabora.image.repository }}:{{ .Values.collabora.image.tag }}
+          imagePullPolicy: {{ .Values.collabora.image.pullPolicy | default "IfNotPresent" }}
           command: ['/bin/bash', '-c']
           args:
             - 'coolconfig generate-proof-key && /start-collabora-online.sh'
