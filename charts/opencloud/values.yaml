@@ -567,8 +567,11 @@ ingress:
   # Set 'annotationsPreset' to inject known ingress-controller-specific annotations
   # for injecting the header. Supported values: nginx, traefik, haproxy, contour, istio
   #
-  # If set to "traefik" and OnlyOffice is enabled, the chart will also create a Middleware named
-  # 'add-x-forwarded-proto-https' in the release namespace and attach it to the OnlyOffice Ingress.
+  # If set to "traefik" and OnlyOffice is enabled, the chart will create a Middleware
+  # named 'add-x-forwarded-proto-https' for use in both Ingress and Gateway HTTPRoute.
+  #
+  # This is required because Traefik does not allow simple header injection via annotations
+  # or Gateway filters and instead expects a Middleware to be referenced.
   #
   # These annotations are added in addition to any defined in 'annotations'.
   # If there's a conflict, Helm will error. To avoid this, set annotationsPreset: ""
