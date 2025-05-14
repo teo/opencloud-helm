@@ -3,12 +3,11 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "opencloud.fullname" . }}-onlyoffice
-  namespace: {{ include "opencloud.namespace" . }}
   annotations:
     {{- toYaml .Values.ingress.annotations | nindent 4 }}
     {{- if eq .Values.ingress.annotationsPreset "traefik" }}
     # Traefik: attach our pre-defined Middleware
-    traefik.ingress.kubernetes.io/router.middlewares: {{ include "opencloud.namespace" . }}-add-x-forwarded-proto-https@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: {{ .Release.Namespace }}-add-x-forwarded-proto-https@kubernetescrd
     {{- else if eq .Values.ingress.annotationsPreset "nginx" }}
     # NGINX: inject custom header via configuration-snippet
     nginx.ingress.kubernetes.io/configuration-snippet: |
