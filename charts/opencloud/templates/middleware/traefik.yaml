@@ -1,4 +1,4 @@
-{{- if and .Values.onlyoffice.enabled (or (and .Values.ingress.enabled (eq .Values.ingress.annotationsPreset "traefik")) (and .Values.httpRoute.enabled (eq .Values.httpRoute.gateway.className "traefik"))) }}
+{{- if and .Values.onlyoffice.enabled (or (eq .Values.ingress.annotationsPreset "traefik") (eq .Values.httpRoute.gateway.className "traefik")) }}
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
