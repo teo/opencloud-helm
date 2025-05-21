@@ -7,5 +7,5 @@ metadata:
     {{- include "opencloud.labels" . | nindent 4 }}
     app.kubernetes.io/component: keycloak
 data:
-  docker-entrypoint-override.sh: {{ .Files.Get "files/keycloak/docker-entrypoint-override.sh" | quote }}
+{{ (.Files.Glob "files/keycloak/*.sh").AsConfig | indent 2 }}
 {{- end }}

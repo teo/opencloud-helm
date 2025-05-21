@@ -7,6 +7,10 @@ metadata:
     {{- include "opencloud.labels" . | nindent 4 }}
     app.kubernetes.io/component: onlyoffice
 data:
-  entrypoint-override.sh: {{ .Files.Get "files/onlyoffice/entrypoint-override.sh" | quote }}
-  local.json: {{ tpl (.Files.Get "files/onlyoffice/local.json.gotmpl") . | quote }}
+  entrypoint-override.sh: |
+{{- .Files.Get "files/onlyoffice/entrypoint-override.sh"  | nindent 4 }}
+
+  local.json: |
+{{- tpl (.Files.Get "files/onlyoffice/local.json.gotmpl") . | nindent 4 }}
+
 {{- end }}

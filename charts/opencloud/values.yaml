@@ -431,14 +431,18 @@ opencloud:
     appRegistry: {}
     # CSP configuration
     csp: {}
-    # Banned password list
-    bannedPasswordList:
-      - "password"
-      - "12345678"
-      - "123"
-      - "OpenCloud"
-      - "OpenCloud-1"
-  
+    # Banned password list configuration
+    # Format: Multi-line string (not YAML array)
+    # Use the |- syntax to preserve line breaks
+    # Add one password per line - do not use YAML list syntax (no dashes)
+    # Example:
+    #   bannedPasswordList: |-
+    #     password1
+    #     password2
+    #     password3
+    # For very long lists override the file 'files/opencloud/banned-password-list.txt'
+    bannedPasswordList: |-
+
   # =====================================================================
   # EMAIL (SMTP)
   # =====================================================================

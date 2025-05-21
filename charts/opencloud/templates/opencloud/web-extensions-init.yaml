@@ -7,5 +7,6 @@ metadata:
     {{- include "opencloud.labels" . | nindent 4 }}
     app.kubernetes.io/component: opencloud
 data:
-  init-web-extensions.sh: {{ tpl (.Files.Get "files/opencloud/init-web-extensions.sh.gotmpl") . | quote }}
+  init-web-extensions.sh: |-
+{{- (tpl (.Files.Get "files/opencloud/init-web-extensions.sh.gotmpl") . ) | nindent 4 }}
 {{- end }}
