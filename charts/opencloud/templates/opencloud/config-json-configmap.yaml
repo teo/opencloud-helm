@@ -8,9 +8,5 @@ metadata:
     app.kubernetes.io/component: opencloud
 data:
   config.json: |-
-    {
-      "server": "https://{{ include "opencloud.domain" . }}",
-      "theme": "owncloud",
-      "version": "0.1.0"
-    }
+{{- (tpl (.Files.Get "files/opencloud/config.json.gotmpl") . ) | nindent 4 }}
 {{- end }}
