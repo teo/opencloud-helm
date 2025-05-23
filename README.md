@@ -70,6 +70,16 @@ The current maintainers and reviewers are listed in [MAINTAINERS.md](./MAINTAINE
 - PV provisioner support in the underlying infrastructure (if persistence is enabled)
 - External ingress controller (e.g., Cilium Gateway API) for routing traffic to the services
 
+## ⚠️ Version Stability Notice
+
+**Important**: These Helm charts are currently at version `0.x.x`, which according to [Semantic Versioning 2.0](https://semver.org/spec/v2.0.0.html#spec-item-4) means:
+- The charts are still under heavy development
+- Breaking changes may occur at any time
+- The public API should not be considered stable
+- Use with caution in production environments
+
+We recommend pinning to specific chart versions and thoroughly testing updates before applying them.
+
 ## 📦 Available Charts
 
 This repository contains the following charts:
