@@ -152,30 +152,14 @@ Create a fully qualified Tika name.
 Return the image registry, using global override if set
 */}}
 {{- define "opencloud.image.registry" -}}
-{{- $registry := .registry -}}
-{{- if .global -}}
-{{- if .global.image -}}
-{{- if .global.image.registry -}}
-{{- $registry = .global.image.registry -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-{{- $registry -}}
+{{- coalesce .global.image.registry .registry -}}
 {{- end -}}
 
 {{/*
 Return the image pull policy, using global override if set
 */}}
 {{- define "opencloud.image.pullPolicy" -}}
-{{- $pullPolicy := .pullPolicy -}}
-{{- if .global -}}
-{{- if .global.image -}}
-{{- if .global.image.pullPolicy -}}
-{{- $pullPolicy = .global.image.pullPolicy -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-{{- $pullPolicy -}}
+{{- coalesce .global.image.pullPolicy .pullPolicy -}}
 {{- end -}}
 
 {{/*
