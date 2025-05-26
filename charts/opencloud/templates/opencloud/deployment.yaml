@@ -35,7 +35,8 @@ spec:
         fsGroup: 1000
       initContainers:
         - name: init-config
-          image: busybox
+          image: {{ include "opencloud.image" (dict "imageValues" .Values.busybox.image "global" .Values.global) | quote }}
+          imagePullPolicy: {{ include "opencloud.image.pullPolicy" (dict "pullPolicy" .Values.busybox.image.pullPolicy "global" .Values.global) | quote }}
           command: ['sh', '-c', 'mkdir -p /etc/opencloud /var/lib/opencloud']
           volumeMounts:
             - name: config
@@ -94,7 +95,8 @@ spec:
         {{- end }}
         # Final init container to copy all extensions to the apps directory
         - name: init-web-extensions
-          image: busybox
+          image: {{ include "opencloud.image" (dict "imageValues" .Values.busybox.image "global" .Values.global) | quote }}
+          imagePullPolicy: {{ include "opencloud.image.pullPolicy" (dict "pullPolicy" .Values.busybox.image.pullPolicy "global" .Values.global) | quote }}
           command: ['sh', '/scripts/init-web-extensions.sh']
           volumeMounts:
             - name: extensions

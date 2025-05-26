@@ -62,6 +62,22 @@ global:
     pullPolicy: ""
 
 # =====================================================================
+# UTILITY IMAGES
+# =====================================================================
+
+# Busybox image settings (used for init containers)
+busybox:
+  image:
+    # Busybox image registry
+    registry: docker.io
+    # Busybox image repository
+    repository: library/busybox
+    # Busybox image tag
+    tag: "1.36"
+    # Image pull policy
+    pullPolicy: IfNotPresent
+
+# =====================================================================
 # IDENTITY PROVIDER (KEYCLOAK)
 # =====================================================================
 

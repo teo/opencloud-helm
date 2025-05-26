@@ -24,7 +24,8 @@ spec:
         fsGroup: 1000
       initContainers:
         - name: init-minio-bucket
-          image: busybox
+          image: {{ include "opencloud.image" (dict "imageValues" .Values.busybox.image "global" .Values.global) | quote }}
+          imagePullPolicy: {{ include "opencloud.image.pullPolicy" (dict "pullPolicy" .Values.busybox.image.pullPolicy "global" .Values.global) | quote }}
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
