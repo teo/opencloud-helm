@@ -250,6 +250,7 @@ This will prepend `my-registry.com/` to all image references in the chart. For e
 | `opencloud.logColor` | Enable log color | `false` |
 | `opencloud.logPretty` | Enable pretty logging | `false` |
 | `opencloud.insecure` | Insecure mode (for self-signed certificates) | `true` |
+| `opencloud.existingSecret` | Name of the existing secret | `` |
 | `opencloud.adminPassword` | Admin password | `admin` |
 | `opencloud.createDemoUsers` | Create demo users | `false` |
 | `opencloud.resources` | CPU/Memory resource requests/limits | `{}` |
@@ -267,6 +268,7 @@ This will prepend `my-registry.com/` to all image references in the chart. For e
 | `opencloud.smtp.authentication` | SMTP authentication | `plain` |
 | `opencloud.smtp.encryption` | SMTP encryption | `starttls` |
 | `opencloud.storage.s3.internal.enabled` | Enable internal MinIO instance | `true` |
+| `opencloud.storage.s3.internal.existingSecret` | Name of the existing secret | `` |
 | `opencloud.storage.s3.internal.rootUser` | MinIO root user | `opencloud` |
 | `opencloud.storage.s3.internal.rootPassword` | MinIO root password | `opencloud-secret-key` |
 | `opencloud.storage.s3.internal.bucketName` | MinIO bucket name | `opencloud-bucket` |
@@ -279,6 +281,7 @@ This will prepend `my-registry.com/` to all image references in the chart. For e
 | `opencloud.storage.s3.external.enabled` | Enable external S3 | `false` |
 | `opencloud.storage.s3.external.endpoint` | External S3 endpoint URL | `""` |
 | `opencloud.storage.s3.external.region` | External S3 region | `default` |
+| `opencloud.storage.s3.external.existingSecret` | Name of the existing secret | `` |
 | `opencloud.storage.s3.external.accessKey` | External S3 access key | `""` |
 | `opencloud.storage.s3.external.secretKey` | External S3 secret key | `""` |
 | `opencloud.storage.s3.external.bucket` | External S3 bucket | `""` |
@@ -297,6 +300,7 @@ By default the chart deploys an internal keycloak. It can be disabled and replac
 | `keycloak.internal.image.tag` | Keycloak image tag | `26.1.4` |
 | `keycloak.internal.image.pullPolicy` | Image pull policy | `IfNotPresent` |
 | `keycloak.internal.replicas` | Number of replicas | `1` |
+| `keycloak.internal.existingSecret` | Name of the existing secret | `` |
 | `keycloak.internal.adminUser` | Admin user | `admin` |
 | `keycloak.internal.adminPassword` | Admin password | `admin` |
 | `keycloak.internal.realm` | Realm name | `openCloud` |
@@ -327,6 +331,7 @@ keycloak:
 | --------- | ----------- | ------- |
 | `postgres.enabled` | Enable PostgreSQL | `true` |
 | `postgres.database` | Database name | `keycloak` |
+| `postgres.existingSecret` | Name of the existing secret | `` |
 | `postgres.user` | Database user | `keycloak` |
 | `postgres.password` | Database password | `keycloak` |
 | `postgres.resources` | CPU/Memory resource requests/limits | `{}` |
@@ -369,6 +374,7 @@ This ensures the `X-Forwarded-Proto: https` header is added as required by OnlyO
 | `collabora.image.repository` | Collabora image repository | `collabora/code` |
 | `collabora.image.tag` | Collabora image tag | `24.04.13.2.1` |
 | `collabora.image.pullPolicy` | Image pull policy | `IfNotPresent` |
+| `collabora.existingSecret` | Name of the existing secret | `` |
 | `collabora.adminUser` | Admin user | `admin` |
 | `collabora.adminPassword` | Admin password | `admin` |
 | `collabora.ssl.enabled` | Enable SSL | `true` |
