@@ -262,6 +262,7 @@ This will prepend `my-registry.com/` to all image references in the chart. For e
 | `opencloud.smtp.host` | SMTP host | `` |
 | `opencloud.smtp.port` | SMTP port | `587` |
 | `opencloud.smtp.sender` | SMTP sender | `` |
+| `opencloud.smtp.existingSecret` | Name of the existing secret | `` |
 | `opencloud.smtp.username` | SMTP username | `` |
 | `opencloud.smtp.password` | SMTP password | `` |
 | `opencloud.smtp.insecure` | SMTP insecure | `false` |
@@ -357,6 +358,8 @@ keycloak:
 | `onlyoffice.config.coAuthoring.token.enable.request.inbox` | Enable token for incoming requests | `true` |
 | `onlyoffice.config.coAuthoring.token.enable.request.outbox` | Enable token for outgoing requests | `true` |
 | `onlyoffice.config.coAuthoring.token.enable.browser` | Enable token for browser requests | `true` |
+| `onlyoffice.config.coAuthoring.secret.existingSecret` | Name of the existing secret | `` |
+| `onlyoffice.config.coAuthoring.secret.session.string` | Session string for onlyoffice | `` |
 | `onlyoffice.collaboration.enabled` | Enable collaboration service | `true` |
 
 If you use Traefik and enable OnlyOffice, this chart will automatically create a `Middleware`
