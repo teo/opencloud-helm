@@ -452,13 +452,6 @@ kubectl apply -f cluster-issuer.yaml
 Create a wildcard certificate for all OpenCloud subdomains:
 
 ```yaml
-# cluster-issuer.yaml
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: selfsigned-issuer
-spec:
-  selfSigned: {}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
