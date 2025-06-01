@@ -326,7 +326,6 @@ This ensures the `X-Forwarded-Proto: https` header is added as required by OnlyO
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
 | `collaboration.enabled` | Enable collaboration service | `true` |
-| `collaboration.wopiDomain` | WOPI server domain | `collaboration.opencloud.test` |
 | `collaboration.resources` | CPU/Memory resource requests/limits | `{}` |
 
 ## Gateway API Configuration
