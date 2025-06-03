@@ -17,8 +17,16 @@ spec:
       {{- toYaml . | nindent 4 }}
   {{- end }}
   listeners:
+    {{- if .Values.global.tls.enabled }}
     - name: opencloud-https
+    {{- else }}
+    - name: opencloud-http
+    {{- end }}
+      {{- if .Values.global.tls.enabled }}
       protocol: HTTPS
+      {{- else }}
+      protocol: HTTP
+      {{- end }}
       port: {{ .Values.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.opencloud | quote }}
       {{- if .Values.global.tls.enabled }}
