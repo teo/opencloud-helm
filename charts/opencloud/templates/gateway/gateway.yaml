@@ -43,8 +43,16 @@ spec:
             matchLabels:
               kubernetes.io/metadata.name: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
     {{- if .Values.keycloak.enabled }}
+    {{- if .Values.global.tls.enabled }}
     - name: keycloak-https
+    {{- else }}
+    - name: keycloak-http
+    {{- end }}
+      {{- if .Values.global.tls.enabled }}
       protocol: HTTPS
+      {{- else }}
+      protocol: HTTP
+      {{- end }}
       port: {{ .Values.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.keycloak | quote }}
       {{- if .Values.global.tls.enabled }}
