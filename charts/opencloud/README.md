@@ -452,7 +452,7 @@ kubectl apply -f cluster-issuer.yaml
 Create a wildcard certificate for all OpenCloud subdomains:
 
 ```yaml
----
+# certificate.yaml
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -471,7 +471,7 @@ spec:
 Apply the certificate:
 
 ```bash
-kubectl apply -f cluster-issuer.yaml
+kubectl apply -f certificate.yaml
 ```
 
 ### Step 4: Create the Gateway
