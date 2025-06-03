@@ -384,7 +384,7 @@ The following HTTPRoutes are created when `httpRoute.enabled` is set to `true`:
    - Headers: Adds Permissions-Policy header to prevent browser features like interest-based advertising
 
 7. **Collaboration (WOPI) HTTPRoute** (when `collaboration.enabled` is `true`):
-   - Hostname: `collaboration.wopiDomain`
+   - Hostname: `global.domain.wopi`
    - Service: `{{ release-name }}-collaboration`
    - Port: 9300
    - Headers: Adds Permissions-Policy header to prevent browser features like interest-based advertising
