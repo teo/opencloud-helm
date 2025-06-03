@@ -97,8 +97,16 @@ spec:
               kubernetes.io/metadata.name: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
     {{- end }}
     {{- if .Values.collabora.enabled }}
+    {{- if .Values.global.tls.enabled }}
     - name: collabora-https
+    {{- else }}
+    - name: collabora-http
+    {{- end }}
+      {{- if .Values.global.tls.enabled }}
       protocol: HTTPS
+      {{- else }}
+      protocol: HTTP
+      {{- end }}
       port: {{ .Values.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.collabora | quote }}
       {{- if .Values.global.tls.enabled }}
