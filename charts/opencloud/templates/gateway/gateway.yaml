@@ -70,8 +70,16 @@ spec:
               kubernetes.io/metadata.name: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
     {{- end }}
     {{- if and .Values.opencloud.storage.s3.internal.enabled .Values.opencloud.storage.s3.internal.httpRoute.enabled }}
+    {{- if .Values.global.tls.enabled }}
     - name: minio-https
+    {{- else }}
+    - name: minio-http
+    {{- end }}
+      {{- if .Values.global.tls.enabled }}
       protocol: HTTPS
+      {{- else }}
+      protocol: HTTP
+      {{- end }}
       port: {{ .Values.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.minio | quote }}
       {{- if .Values.global.tls.enabled }}
