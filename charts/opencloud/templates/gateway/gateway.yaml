@@ -21,11 +21,13 @@ spec:
       protocol: HTTPS
       port: {{ .Values.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.opencloud | quote }}
+      {{- if .Values.global.tls.enabled }}
       tls:
         mode: Terminate
         certificateRefs:
           - name: opencloud-wildcard-tls
             namespace: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
+      {{- end }}
       allowedRoutes:
         namespaces:
           from: Selector
@@ -37,11 +39,13 @@ spec:
       protocol: HTTPS
       port: {{ .Values.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.keycloak | quote }}
+      {{- if .Values.global.tls.enabled }}
       tls:
         mode: Terminate
         certificateRefs:
           - name: opencloud-wildcard-tls
             namespace: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
+      {{- end }}
       allowedRoutes:
         namespaces:
           from: Selector
@@ -54,11 +58,13 @@ spec:
       protocol: HTTPS
       port: {{ .Values.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.minio | quote }}
+      {{- if .Values.global.tls.enabled }}
       tls:
         mode: Terminate
         certificateRefs:
           - name: opencloud-wildcard-tls
             namespace: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
+      {{- end }}
       allowedRoutes:
         namespaces:
           from: Selector
@@ -71,11 +77,13 @@ spec:
       protocol: HTTPS
       port: {{ .Values.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.collabora | quote }}
+      {{- if .Values.global.tls.enabled }}
       tls:
         mode: Terminate
         certificateRefs:
           - name: opencloud-wildcard-tls
             namespace: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
+      {{- end }}
       allowedRoutes:
         namespaces:
           from: Selector
@@ -88,11 +96,13 @@ spec:
       protocol: HTTPS
       port: {{ .Values.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.onlyoffice | quote }}
+      {{- if .Values.global.tls.enabled }}
       tls:
         mode: Terminate
         certificateRefs:
           - name: opencloud-wildcard-tls
             namespace: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
+      {{- end }}
       allowedRoutes:
         namespaces:
           from: Selector
@@ -105,11 +115,13 @@ spec:
       protocol: HTTPS
       port: {{ .Values.httpRoute.gateway.port | default 443 }}
       hostname: {{ .Values.global.domain.wopi | quote }}
+      {{- if .Values.global.tls.enabled }}
       tls:
         mode: Terminate
         certificateRefs:
           - name: opencloud-wildcard-tls
             namespace: {{ .Values.httpRoute.gateway.namespace | default .Release.Namespace }}
+      {{- end }}
       allowedRoutes:
         namespaces:
           from: Selector
