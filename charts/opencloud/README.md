@@ -469,19 +469,12 @@ Apply the ClusterIssuer:
 kubectl apply -f cluster-issuer.yaml
 ```
 
-### Step 3: Create a Wildcard Certificate for OpenCloud Domains
+### Step 4: Create a Wildcard Certificate for OpenCloud Domains
 
 Create a wildcard certificate for all OpenCloud subdomains:
 
 ```yaml
-# cluster-issuer.yaml
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: selfsigned-issuer
-spec:
-  selfSigned: {}
----
+# certificate.yaml
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -500,10 +493,10 @@ spec:
 Apply the certificate:
 
 ```bash
-kubectl apply -f cluster-issuer.yaml
+kubectl apply -f certificate.yaml
 ```
 
-### Step 4: Create the Gateway
+### Step 5: Create the Gateway
 
 Create a Gateway resource to expose your services:
 
@@ -621,7 +614,7 @@ Apply the Gateway:
 kubectl apply -f gateway.yaml
 ```
 
-### Step 5: Configure DNS
+### Step 6: Configure DNS
 
 Configure your DNS to point to the Gateway IP address. You can use a wildcard DNS record or individual records for each service:
 
@@ -641,7 +634,7 @@ Alternatively, for local testing, you can add entries to your `/etc/hosts` file:
 192.168.178.77  wopiserver.opencloud.test
 ```
 
-### Step 6: Install OpenCloud
+### Step 7: Install OpenCloud
 
 Finally, install OpenCloud using Helm:
 
