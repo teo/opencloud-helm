@@ -137,25 +137,6 @@ keycloak:
     realm: "openCloud"
     # External Keycloak client ID
     clientId: "web"
-    requests:
-      cpu: 100m
-      memory: 256Mi
-    limits:
-      cpu: 1000m
-      memory: 1Gi
-  
-  # Realm name
-  realm: openCloud
-  
-  # Persistence configuration
-  persistence:
-    enabled: true
-    # Size of the persistent volume
-    size: 1Gi
-    # Storage class
-    storageClass: ""
-    # Access mode
-    accessMode: ReadWriteOnce
 
 # PostgreSQL settings for Keycloak
 postgres:
