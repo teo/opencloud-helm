@@ -224,6 +224,8 @@ This will prepend `my-registry.com/` to all image references in the chart. For e
 | `global.domain.wopi` | Domain for WOPI server | `wopiserver.opencloud.test` |
 | `global.tls.enabled` | Enable TLS (set to false when using gateway TLS termination externally) | `false` |
 | `global.tls.secretName` | secretName for TLS certificate | `""` |
+| `global.oidc.issuer` | OpenID Connect Issuer URL | `""` generated to use the internal keycloak|
+| `global.oidc.clientId` | OpenID Connect Client ID used by OpenCloud | `"web"` |
 | `global.storage.storageClass` | Storage class for persistent volumes | `""` |
 | `global.image.registry` | Global registry override for all images (e.g., `my-registry.com`) | `""` |
 | `global.image.pullPolicy` | Global pull policy override for all images (`Always`, `IfNotPresent`, `Never`) | `""` |
@@ -275,7 +277,7 @@ This will prepend `my-registry.com/` to all image references in the chart. For e
 
 ### Keycloak Settings
 
-Keycloak configuration follows the standardized internal/external pattern (see issue #64).
+By default the chart deploys an internal keycloak. It can be disabled and replaced with an external IdP.
 
 #### Internal Keycloak
 
@@ -295,29 +297,20 @@ Keycloak configuration follows the standardized internal/external pattern (see i
 
 > **Note**: When using internal Keycloak with multiple OpenCloud replicas (`opencloud.replicas > 1`), you must use an external shared database or LDAP. The embedded IDM does not support replication. See [issue #53](https://github.com/opencloud-eu/helm/issues/53) for details.
 
-#### External Keycloak
-
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
-| `keycloak.external.enabled` | Enable external Keycloak | `false` |
-| `keycloak.external.url` | External Keycloak URL (without /realms/...) | `""` |
-| `keycloak.external.realm` | External Keycloak realm | `openCloud` |
-| `keycloak.external.clientId` | External Keycloak client ID | `web` |
-
-#### Example: Using External Keycloak
+#### Example: Using External IDP
 
 ```yaml
+global:
+  oidc:
+    issuer: "https://idp.example.com/realms/openCloud"
+    clientId: "opencloud-web"
+
 keycloak:
   internal:
     enabled: false
-  external:
-    enabled: true
-    url: "https://keycloak.example.com"
-    realm: "my-realm"
-    clientId: "opencloud-web"
 ```
 
-**Note**: Only one of `keycloak.internal.enabled` or `keycloak.external.enabled` should be set to `true`.
+**Note**: If `keycloak.internal.enabled` is `true`, the `global.oidc.issuer` should be left empty to not override the generated issuer URL.
 
 ### PostgreSQL Settings
 
