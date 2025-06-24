@@ -408,7 +408,7 @@ The following HTTPRoutes are created when `httpRoute.enabled` is set to `true`:
    - Port: 9200
    - Headers: Removes Permissions-Policy header to prevent browser console errors
 
-2. **Keycloak HTTPRoute** (when `keycloak.enabled` is `true`):
+2. **Keycloak HTTPRoute** (when `keycloak.internal.enabled` is `true`):
    - Hostname: `global.domain.keycloak`
    - Service: `{{ release-name }}-keycloak`
    - Port: 8080

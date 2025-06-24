@@ -112,11 +112,11 @@ keycloak:
     existingSecret: ""
 
     # Admin user
-    # ignored if keycloak.existingSecret is not empty string
+    # ignored if keycloak.internal.existingSecret is not empty string
     adminUser: admin
 
     # Admin password
-    # ignored if keycloak.existingSecret is not empty string
+    # ignored if keycloak.internal.existingSecret is not empty string
     adminPassword: admin
 
     # Keycloak realm
