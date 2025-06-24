@@ -257,6 +257,15 @@ This will prepend `my-registry.com/` to all image references in the chart. For e
 | `opencloud.persistence.size` | Size of the persistent volume | `10Gi` |
 | `opencloud.persistence.storageClass` | Storage class | `""` |
 | `opencloud.persistence.accessMode` | Access mode | `ReadWriteOnce` |
+| `opencloud.smtp.enabled` | Enable smtp for opencloud | `false` |
+| `opencloud.smtp.host` | SMTP host | `` |
+| `opencloud.smtp.port` | SMTP port | `587` |
+| `opencloud.smtp.sender` | SMTP sender | `` |
+| `opencloud.smtp.username` | SMTP username | `` |
+| `opencloud.smtp.password` | SMTP password | `` |
+| `opencloud.smtp.insecure` | SMTP insecure | `false` |
+| `opencloud.smtp.authentication` | SMTP authentication | `plain` |
+| `opencloud.smtp.encryption` | SMTP encryption | `starttls` |
 | `opencloud.storage.s3.internal.enabled` | Enable internal MinIO instance | `true` |
 | `opencloud.storage.s3.internal.rootUser` | MinIO root user | `opencloud` |
 | `opencloud.storage.s3.internal.rootPassword` | MinIO root password | `opencloud-secret-key` |
