@@ -293,38 +293,43 @@ spec:
               value: {{ if .Values.opencloud.storage.s3.external.enabled }}{{ .Values.opencloud.storage.s3.external.region | quote }}{{ else }}{{ .Values.opencloud.storage.s3.internal.region | default "default" | quote }}{{ end }}
             - name: STORAGE_USERS_DECOMPOSEDS3_ACCESS_KEY
               valueFrom:
+                {{- if .Values.opencloud.storage.s3.external.enabled }}
                 secretKeyRef:
-                  name: {{- if .Values.opencloud.storage.s3.external.enabled }}
-                          {{- if .Values.opencloud.storage.s3.external.existingSecret }}
-                            {{ .Values.opencloud.storage.s3.external.existingSecret }}
-                          {{- else }}
-                            {{ include "opencloud.opencloud.fullname" . }}-s3
-                          {{- end }}
+                  name: {{- if .Values.opencloud.storage.s3.external.existingSecret }}
+                          {{ .Values.opencloud.storage.s3.external.existingSecret }}
                         {{- else }}
-                          minio
+                          {{ include "opencloud.opencloud.fullname" . }}-s3
                         {{- end }}
-                  key: {{- if .Values.opencloud.storage.s3.external.enabled }} 
-                          accessKey 
-                        {{- else }} 
-                          rootUser 
+                  key: accessKey
+                {{- else }}
+                secretKeyRef:
+                  name: {{- if .Values.opencloud.storage.s3.internal.existingSecret }}
+                          {{ .Values.opencloud.storage.s3.internal.existingSecret }}
+                        {{- else }}
+                          {{ include "opencloud.minio.fullname" . }}
                         {{- end }}
+                  key: rootUser
+                {{- end }}
+
             - name: STORAGE_USERS_DECOMPOSEDS3_SECRET_KEY
               valueFrom:
+                {{- if .Values.opencloud.storage.s3.external.enabled }}
                 secretKeyRef:
-                  name: {{- if .Values.opencloud.storage.s3.external.enabled }}
-                          {{- if .Values.opencloud.storage.s3.external.existingSecret }}
-                            {{ .Values.opencloud.storage.s3.external.existingSecret }}
-                          {{- else }}
-                            {{ include "opencloud.opencloud.fullname" . }}-s3
-                          {{- end }}
+                  name: {{- if .Values.opencloud.storage.s3.external.existingSecret }}
+                          {{ .Values.opencloud.storage.s3.external.existingSecret }}
                         {{- else }}
-                          minio
+                          {{ include "opencloud.opencloud.fullname" . }}-s3
                         {{- end }}
-                  key: {{- if .Values.opencloud.storage.s3.external.enabled }} 
-                          secretKey 
-                        {{- else }} 
-                          rootPassword 
+                  key: secretKey
+                {{- else }}
+                secretKeyRef:
+                  name: {{- if .Values.opencloud.storage.s3.internal.existingSecret }}
+                          {{- .Values.opencloud.storage.s3.internal.existingSecret }}
+                        {{- else}}
+                          {{ include "opencloud.minio.fullname" . }}
                         {{- end }}
+                  key: rootPassword
+                {{- end }}
             - name: STORAGE_USERS_DECOMPOSEDS3_BUCKET
               value: {{ if .Values.opencloud.storage.s3.external.enabled }}{{ .Values.opencloud.storage.s3.external.bucket | quote }}{{ else }}{{ .Values.opencloud.storage.s3.internal.bucketName | quote }}{{ end }}
             - name: STORAGE_USERS_DECOMPOSEDS3_CREATE_BUCKET
