@@ -112,11 +112,11 @@ keycloak:
     existingSecret: ""
 
     # Admin user
-    # ignored if keycloak.internal.existingSecret is not empty string
+    # ignored if keycloak.internal.existingSecret is set
     adminUser: admin
 
     # Admin password
-    # ignored if keycloak.internal.existingSecret is not empty string
+    # ignored if keycloak.internal.existingSecret is set
     adminPassword: admin
 
     # Keycloak realm
@@ -165,11 +165,11 @@ postgres:
   existingSecret: ""
 
   # Database user
-  # ignored if postgres.existingSecret is not empty string
+  # ignored if postgres.existingSecret is set
   user: keycloak
 
   # Database password
-  # ignored if postgres.existingSecret is not empty string
+  # ignored if postgres.existingSecret is set
   password: keycloak
 
   # Resources allocation
@@ -276,10 +276,10 @@ collabora:
   existingSecret: ""
 
   admin:
-    # ignored if collabora.existingSecret is not empty string
+    # ignored if collabora.existingSecret is set
     user: admin
 
-    # ignored if collabora.existingSecret is not empty string
+    # ignored if collabora.existingSecret is set
     password: admin
 
   resources:
@@ -351,7 +351,7 @@ onlyoffice:
         # Use existing secret for onlyoffice credentials (Note: secretKeyName must be sessionSecret)
         existingSecret: ""
         
-        # ignored if onlyoffice.config.coAuthoring.secret.existingSecret is not empty string
+        # ignored if onlyoffice.config.coAuthoring.secret.existingSecret is set
         session:
           string: "Dd0SXIe1k9oCfdffgrfNmA0TK1bb1B1d38OFSb"
     # RabbitMQ settings
@@ -359,7 +359,7 @@ onlyoffice:
       # Use existing secret for onlyoffice rabbitmq credentials (Note: secretKeyName must be url)
       existingSecret: ""
 
-      # ignored if onlyoffice.config.rabbitmq.existingSecret is not empty string
+      # ignored if onlyoffice.config.rabbitmq.existingSecret is set
       url: "amqp://guest:Dd0SXIe1k9osdfjkmA0TK1bb1B1d38OFSb@localhost"
     # File converter settings
     fileConverter:
@@ -427,7 +427,7 @@ opencloud:
   existingSecret: ""
   
   # Admin password
-  # ignored if opencloud.existingSecret is not empty string
+  # ignored if opencloud.existingSecret is set
   adminPassword: admin
   
   # Create demo users
@@ -496,11 +496,11 @@ opencloud:
     existingSecret: ""
     
     # SMTP username
-    # ignored if opencloud.smtp.existingSecret is not empty string
+    # ignored if opencloud.smtp.existingSecret is set
     username: ""
 
     # SMTP password
-    # ignored if opencloud.smtp.existingSecret is not empty string
+    # ignored if opencloud.smtp.existingSecret is set
     password: ""
 
     # SMTP insecure (allow self-signed certificates)
@@ -541,11 +541,11 @@ opencloud:
         existingSecret: ""
         
         # Minio Root user
-        # ignored if opencloud.storage.s3.internal.existingSecret is not empty string
+        # ignored if opencloud.storage.s3.internal.existingSecret is set
         rootUser: opencloud
 
         # Minio Root password
-        # ignored if opencloud.storage.s3.internal.existingSecret is not empty string
+        # ignored if opencloud.storage.s3.internal.existingSecret is set
         rootPassword: opencloud-secret-key
         
         # Bucket name
@@ -582,11 +582,11 @@ opencloud:
         existingSecret: ""
         
         # External S3 access key
-        # ignored if opencloud.storage.s3.external.existingSecret is not empty string
+        # ignored if opencloud.storage.s3.external.existingSecret is set
         accessKey: ""
 
         # External S3 secret key
-        # ignored if opencloud.storage.s3.external.existingSecret is not empty string
+        # ignored if opencloud.storage.s3.external.existingSecret is set
         secretKey: ""
 
         # External S3 bucket
