@@ -287,42 +287,47 @@ spec:
               value: "decomposed"
             
             # S3 storage configuration
-            {{- /* Precompute S3 settings */}}
             {{- if .Values.opencloud.storage.s3.external.enabled }}
-              {{- $s3Endpoint := .Values.opencloud.storage.s3.external.endpoint | quote }}
-              {{- $s3Region := .Values.opencloud.storage.s3.external.region | quote }}
-              {{- $s3Bucket := .Values.opencloud.storage.s3.external.bucket | quote }}
-              {{- $s3CreateBucket := (.Values.opencloud.storage.s3.external.createBucket | default true) | quote }}
-              {{- $s3SecretName := .Values.opencloud.storage.s3.external.existingSecret | default (printf "%s-s3" (include "opencloud.opencloud.fullname" .)) }}
-              {{- $accessKey := "accessKey" }}
-              {{- $secretKey := "secretKey" }}
-            {{- else }}
-              {{- $s3Endpoint := printf "\"http://%s:9000\"" (include "opencloud.minio.fullname" .) }}
-              {{- $s3Region := .Values.opencloud.storage.s3.internal.region | default "default" | quote }}
-              {{- $s3Bucket := .Values.opencloud.storage.s3.internal.bucketName | quote }}
-              {{- $s3CreateBucket := "true" }}
-              {{- $s3SecretName := .Values.opencloud.storage.s3.internal.existingSecret | default (include "opencloud.minio.fullname" .) }}
-              {{- $accessKey := "rootUser" }}
-              {{- $secretKey := "rootPassword" }}
-            {{- end }}
+            # External S3 storage
             - name: STORAGE_USERS_DECOMPOSEDS3_ENDPOINT
-              value: {{ $s3Endpoint }}
+              value: {{ .Values.opencloud.storage.s3.external.endpoint | quote }}
             - name: STORAGE_USERS_DECOMPOSEDS3_REGION
-              value: {{ $s3Region }}
+              value: {{ .Values.opencloud.storage.s3.external.region | quote }}
             - name: STORAGE_USERS_DECOMPOSEDS3_BUCKET
-              value: {{ $s3Bucket }}
+              value: {{ .Values.opencloud.storage.s3.external.bucket | quote }}
             - name: STORAGE_USERS_DECOMPOSEDS3_CREATE_BUCKET
-              value: {{ $s3CreateBucket }}
+              value: {{ .Values.opencloud.storage.s3.external.createBucket | default true | quote }}
             - name: STORAGE_USERS_DECOMPOSEDS3_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ $s3SecretName }}
-                  key: {{ $accessKey }}
+                  name: {{ .Values.opencloud.storage.s3.external.existingSecret | default (printf "%s-s3" (include "opencloud.opencloud.fullname" .)) }}
+                  key: accessKey
             - name: STORAGE_USERS_DECOMPOSEDS3_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ $s3SecretName }}
-                  key: {{ $secretKey }}
+                  name: {{ .Values.opencloud.storage.s3.external.existingSecret | default (printf "%s-s3" (include "opencloud.opencloud.fullname" .)) }}
+                  key: secretKey
+            {{- else }}
+            # Internal S3 (MinIO) storage
+            - name: STORAGE_USERS_DECOMPOSEDS3_ENDPOINT
+              value: {{ printf "http://%s:9000" (include "opencloud.minio.fullname" .) | quote }}
+            - name: STORAGE_USERS_DECOMPOSEDS3_REGION
+              value: {{ .Values.opencloud.storage.s3.internal.region | default "default" | quote }}
+            - name: STORAGE_USERS_DECOMPOSEDS3_BUCKET
+              value: {{ .Values.opencloud.storage.s3.internal.bucketName | quote }}
+            - name: STORAGE_USERS_DECOMPOSEDS3_CREATE_BUCKET
+              value: "true"
+            - name: STORAGE_USERS_DECOMPOSEDS3_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.opencloud.storage.s3.internal.existingSecret | default (include "opencloud.minio.fullname" .) }}
+                  key: rootUser
+            - name: STORAGE_USERS_DECOMPOSEDS3_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.opencloud.storage.s3.internal.existingSecret | default (include "opencloud.minio.fullname" .) }}
+                  key: rootPassword
+            {{- end }}
             {{- with .Values.opencloud.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
