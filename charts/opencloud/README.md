@@ -288,6 +288,27 @@ This will prepend `my-registry.com/` to all image references in the chart. For e
 | `opencloud.storage.s3.external.bucket` | External S3 bucket | `""` |
 | `opencloud.storage.s3.external.createBucket` | Create bucket if it doesn't exist | `true` |
 
+### NATS Messaging Configuration
+
+| Parameter  | Description | Default |
+| ---------- | ----------- | ------- |
+| `opencloud.nats.external.enabled` | Use an external NATS server (required for high availability) | `false` |
+| `opencloud.nats.external.endpoint` | Endpoint of the external NATS server | `nats.opencloud-nats.svc.cluster.local:4222` |
+| `opencloud.nats.external.cluster` | NATS cluster name | `opencloud-cluster` |
+| `opencloud.nats.external.tls.enabled` | Enable TLS for communication with NATS | `false` |
+| `opencloud.nats.external.tls.certTrusted` | Set to `false` if the external NATS server's certificate is not trusted by default (e.g. self-signed) | `true` |
+| `opencloud.nats.external.tls.insecure` | Disable certificate validation (not recommended for production) | `false` |
+| `opencloud.nats.external.tls.caSecretName` | Name of the Kubernetes Secret containing the CA certificate (only required if `certTrusted` is `false`) | `opencloud-nats-ca` |
+
+> 💡 The secret referenced by `caSecretName` **must contain a key named `ca.crt`** with the root CA certificate used to verify the external NATS server.
+> Example:
+>
+> ```bash
+> kubectl create secret generic opencloud-nats-ca \
+>   --from-file=ca.crt=./path/to/nats-ca.pem \
+>   --namespace your-namespace
+> ```
+
 ### Keycloak Settings
 
 By default the chart deploys an internal keycloak. It can be disabled and replaced with an external IdP.
