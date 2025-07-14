@@ -222,7 +222,7 @@ spec:
             # IDP specific configuration
             - name: PROXY_AUTOPROVISION_ACCOUNTS
               value: "true"
-            # user properties are edited in the idp, so we hate to make them readonly
+            # user properties are edited in the idp, so we have to make them readonly
             - name: FRONTEND_READONLY_USER_ATTRIBUTES
               value: "user.onPremisesSamAccountName,user.displayName,user.mail,user.passwordProfile,user.accountEnabled,user.appRoleAssignments"
             - name: PROXY_ROLE_ASSIGNMENT_DRIVER
@@ -232,6 +232,12 @@ spec:
               value: {{ .Values.global.oidc.issuer | quote }}
               {{- else }}
               value: {{ printf "https://%s/realms/%s" (include "opencloud.keycloak.domain" .) .Values.keycloak.internal.realm | quote }}
+              {{- end }}
+            - name: WEB_OPTION_ACCOUNT_EDIT_LINK_HREF
+              {{- if .Values.global.oidc.accountUrl }}
+              value: {{ .Values.global.oidc.accountUrl | quote }}
+              {{- else }}
+              value: {{ printf "https://%s/realms/%s/account" (include "opencloud.keycloak.domain" .) .Values.keycloak.internal.realm | quote }}
               {{- end }}
             - name: PROXY_OIDC_REWRITE_WELLKNOWN
               value: "true"
