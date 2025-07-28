@@ -199,7 +199,7 @@ spec:
                   name: {{- if .Values.opencloud.smtp.existingSecret }}
                           {{ .Values.opencloud.smtp.existingSecret }}
                         {{- else }}
-                          opencloud-smtp
+                          {{ include "opencloud.opencloud.fullname" . }}-smtp
                         {{- end }}
                   key: smtpUser
             - name: NOTIFICATIONS_SMTP_PASSWORD
@@ -208,7 +208,7 @@ spec:
                   name: {{- if .Values.opencloud.smtp.existingSecret }}
                           {{ .Values.opencloud.smtp.existingSecret }}
                         {{- else }}
-                          opencloud-smtp
+                          {{ include "opencloud.opencloud.fullname" . }}-smtp
                         {{- end }}
                   key: smtpPassword
             - name: NOTIFICATIONS_SMTP_INSECURE
