@@ -433,6 +433,7 @@ spec:
         - name: config-json
           configMap:
             name: {{ include "opencloud.opencloud.fullname" . }}-config-json
+            defaultMode: 0664
         - name: config-files
           configMap:
             name: {{ include "opencloud.opencloud.fullname" . }}-config
