@@ -187,6 +187,8 @@ postgres:
   # Persistence configuration
   persistence:
     enabled: true
+    # Name of existing PVC to use (overrides all other persistence values)
+    existingClaim: ""
     # Size of the persistent volume
     size: 1Gi
     # Storage class
@@ -328,6 +330,8 @@ onlyoffice:
   persistence:
     # Enable persistence
     enabled: true
+    # Name of existing PVC to use (overrides all other persistence values)
+    existingClaim: ""
     # Size of the persistent volume
     size: 2Gi
   # Resources allocation
@@ -452,16 +456,28 @@ opencloud:
       memory: 20Gi
   # Persistence configuration
   persistence:
-    # Enable persistence
-    enabled: true
-    # Size of the persistent volume for data
-    size: 30Gi
-    # Size of the persistent volume for config
-    configSize: 5Gi
-    # Storage class
-    storageClass: ""
-    # Access mode (ReadWriteOnce or ReadWriteMany for multiple replicas)
-    accessMode: ReadWriteOnce
+    config:
+      # Enable persistence
+      enabled: true
+      # Name of existing PVC to use (overrides all other persistence values)
+      existingClaim: ""
+      # Size of the persistent volume for config
+      size: 5Gi
+      # Storage class
+      storageClass: ""
+      # Access mode (ReadWriteOnce or ReadWriteMany for multiple replicas)
+      accessMode: ReadWriteOnce
+    data:
+      # Enable persistence
+      enabled: true
+      # Name of existing PVC to use (overrides all other persistence values)
+      existingClaim: ""
+      # Size of the persistent volume for data
+      size: 30Gi
+      # Storage class
+      storageClass: ""
+      # Access mode (ReadWriteOnce or ReadWriteMany for multiple replicas)
+      accessMode: ReadWriteOnce
   # Configuration files
   config:
     theme: "owncloud"
@@ -599,6 +615,8 @@ opencloud:
         # Persistence configuration
         persistence:
           enabled: true
+          # Name of existing PVC to use (overrides all other persistence values)
+          existingClaim: ""
           # Size of the persistent volume
           size: 30Gi
           # Storage class
