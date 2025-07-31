@@ -652,6 +652,8 @@ httpRoute:
     className: cilium
     # Gateway namespace (defaults to Release.Namespace)
     namespace: ""
+    # Gateway section name (applies to all routes, defaults to component-specific names e.g. opencloud-https, onlyoffice-https, etc.)
+    sectionName: ""
     # Gateway annotations
     annotations:
     # Gateway annotations
