@@ -417,16 +417,24 @@ spec:
             {{- toYaml .Values.opencloud.resources | nindent 12 }}
       volumes:
         - name: config
-          {{- if .Values.opencloud.persistence.enabled }}
+          {{- if .Values.opencloud.persistence.config.enabled }}
           persistentVolumeClaim:
+            {{- if .Values.opencloud.persistence.config.existingClaim }}
+            claimName: {{ .Values.opencloud.persistence.config.existingClaim | quote }}
+            {{- else }}
             claimName: {{ include "opencloud.opencloud.fullname" . }}-config
+            {{- end }}
           {{- else }}
           emptyDir: {}
           {{- end }}
         - name: data
-          {{- if .Values.opencloud.persistence.enabled }}
+          {{- if .Values.opencloud.persistence.data.enabled }}
           persistentVolumeClaim:
+            {{- if .Values.opencloud.persistence.data.existingClaim }}
+            claimName: {{ .Values.opencloud.persistence.data.existingClaim | quote }}
+            {{- else }}
             claimName: {{ include "opencloud.opencloud.fullname" . }}-data
+            {{- end }}
           {{- else }}
           emptyDir: {}
           {{- end }}

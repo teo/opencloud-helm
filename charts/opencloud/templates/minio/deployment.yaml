@@ -107,7 +107,11 @@ spec:
         - name: data
           {{- if .Values.opencloud.storage.s3.internal.persistence.enabled }}
           persistentVolumeClaim:
+            {{- if .Values.opencloud.storage.s3.internal.persistence.existingClaim }}
+            claimName: {{ .Values.opencloud.storage.s3.internal.persistence.existingClaim | quote }}
+            {{- else }}
             claimName: {{ include "opencloud.minio.fullname" . }}-data
+            {{- end }}
           {{- else }}
           emptyDir: {}
           {{- end }}
