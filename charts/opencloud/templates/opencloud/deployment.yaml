@@ -407,7 +407,7 @@ spec:
               mountPath: /var/lib/opencloud
             {{- if and (eq .Values.opencloud.storage.mode "posixfs") .Values.opencloud.storage.posixfs.persistence.enabled }}
             - name: posixfs
-              mountPath: {{ .Values.opencloud.storage.posixfs.rootPath | default "/var/lib/opencloud/users" | quote }}
+              mountPath: {{ .Values.opencloud.storage.posixfs.rootPath | default "/var/lib/opencloud/storage" | quote }}
             {{- end }}
             - name: config-json
               mountPath: /var/lib/opencloud/config.json

@@ -652,8 +652,8 @@ opencloud:
     posixfs:
       # The type of the cache store, supported values are: 'memory', 'redis-sentinel', 'nats-js-kv' (default), 'noop'
       idCacheStore: nats-js-kv
-      # Path of storage root directory, default is empty, which implies /var/lib/opencloud/users
-      rootPath: ""
+      # Path of storage root directory, default is /var/lib/opencloud/storage
+      rootPath: "/var/lib/opencloud/storage"
       persistence:
         # Enable persistence
         enabled: true

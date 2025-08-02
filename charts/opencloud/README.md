@@ -304,7 +304,7 @@ The following options allow setting up a POSIX-compatible filesystem (such as NF
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
 | `opencloud.storage.posixfs.idCacheStore` | Cache store, between 'memory', 'redis-sentinel', 'nats-js-kv', 'noop' | `nats-js-kv` |
-| `opencloud.storage.posixfs.rootPath` | Path of storage root directory in openCloud pod | `""` |
+| `opencloud.storage.posixfs.rootPath` | Path of storage root directory in openCloud pod | `/var/lib/opencloud/storage` |
 | `opencloud.storage.posixfs.persistence.enabled` | Enable persistence for PosixFS | `true` |
 | `opencloud.storage.posixfs.persistence.existingClaim` | Name of existing PVC instead of the settings below | `""` |
 | `opencloud.storage.posixfs.persistence.size` | Size of the PosixFS persistent volume | `30Gi` |
